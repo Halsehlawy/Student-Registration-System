@@ -8,4 +8,5 @@ const attendanceSchema = new Schema({
   // Optionally, add a timestamp or notes
 }, { timestamps: true });
 
-module.exports = mongoose.model('Attendance', attendanceSchema);
+const Attendance = mongoose.model('Attendance', attendanceSchema);
+module.exports = Attendance;
