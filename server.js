@@ -38,6 +38,7 @@ app.use(session({
 app.use('/auth', authController)
 app.use('/students', require('./controllers/students'));
 app.use('/instructors', require('./controllers/instructors'));
+app.use('/classes', require('./controllers/classes'));
 app.use((req, res, next) => {
     res.locals.user = req.session.user;
     next();
