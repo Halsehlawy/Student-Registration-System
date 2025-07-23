@@ -23,6 +23,7 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+
 //SESSION
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -35,6 +36,13 @@ app.use(session({
 }));
 //ROUTES
 app.use('/auth', authController)
+app.use('/students', require('./controllers/students'));
+app.use('/instructors', require('./controllers/instructors'));
+app.use((req, res, next) => {
+    res.locals.user = req.session.user;
+    next();
+});
+// VIEWS
 app.get('/', (req, res) => {
   res.render('index.ejs')
 });
