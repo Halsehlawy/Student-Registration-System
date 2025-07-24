@@ -1,0 +1,217 @@
+<%- include('../../partials/head', { title: 'Take Attendance' }) %>
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>Take Attendance</h2>
+                <p class="text-muted mb-0"><%= classItem.name %> - <%= classItem.subject %></p>
+            </div>
+            <a href="/attendance" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+        
+        <!-- Class Info -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Instructor:</strong> <%= classItem.instructor ? classItem.instructor.name : 'Not assigned' %><br>
+                        <strong>Schedule:</strong> <%= classItem.schedule %><br>
+                        <strong>Room:</strong> <%= classItem.room %>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Total Students:</strong> <%= classItem.students.length %><br>
+                        <strong>Capacity:</strong> <%= classItem.capacity %><br>
+                        <% if (isExisting) { %>
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Attendance already recorded
+                            </span>
+                        <% } else { %>
+                            <span class="badge bg-warning">
+                                <i class="fas fa-clock me-1"></i>Attendance pending
+                            </span>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Form -->
+        <form method="POST" action="/attendance/save/<%= classItem._id %>" id="attendanceForm">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-0">Mark Attendance</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="attendanceDate" class="form-label">Date</label>
+                                    <input type="date" class="form-control" name="date" id="attendanceDate" 
+                                           value="<%= date %>" required>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="button" class="btn btn-outline-primary btn-sm me-2" id="markAllPresent">
+                                        Mark All Present
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="markAllAbsent">
+                                        Mark All Absent
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <% if (attendance.records && attendance.records.length > 0) { %>
+                        <div class="row">
+                            <% attendance.records.forEach((record, index) => { %>
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card student-card" data-student-id="<%= record.student._id %>">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <img src="<%= record.student.image %>" alt="<%= record.student.name %>" 
+                                                     class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;">
+                                                <div>
+                                                    <h6 class="mb-0"><%= record.student.name %></h6>
+                                                    <small class="text-muted">ID: <%= record.student.id %></small>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="btn-group w-100" role="group">
+                                                    <input type="radio" class="btn-check" name="records[<%= record.student._id %>][status]" 
+                                                           id="present_<%= record.student._id %>" value="present" 
+                                                           <%= record.status === 'present' ? 'checked' : '' %>>
+                                                    <label class="btn btn-outline-success btn-sm" for="present_<%= record.student._id %>">
+                                                        <i class="fas fa-check"></i> Present
+                                                    </label>
+
+                                                    <input type="radio" class="btn-check" name="records[<%= record.student._id %>][status]" 
+                                                           id="late_<%= record.student._id %>" value="late" 
+                                                           <%= record.status === 'late' ? 'checked' : '' %>>
+                                                    <label class="btn btn-outline-warning btn-sm" for="late_<%= record.student._id %>">
+                                                        <i class="fas fa-clock"></i> Late
+                                                    </label>
+
+                                                    <input type="radio" class="btn-check" name="records[<%= record.student._id %>][status]" 
+                                                           id="absent_<%= record.student._id %>" value="absent" 
+                                                           <%= record.status === 'absent' ? 'checked' : '' %>>
+                                                    <label class="btn btn-outline-danger btn-sm" for="absent_<%= record.student._id %>">
+                                                        <i class="fas fa-times"></i> Absent
+                                                    </label>
+
+                                                    <input type="radio" class="btn-check" name="records[<%= record.student._id %>][status]" 
+                                                           id="excused_<%= record.student._id %>" value="excused" 
+                                                           <%= record.status === 'excused' ? 'checked' : '' %>>
+                                                    <label class="btn btn-outline-info btn-sm" for="excused_<%= record.student._id %>">
+                                                        <i class="fas fa-user-check"></i> Excused
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-0">
+                                                <textarea class="form-control form-control-sm" 
+                                                          name="records[<%= record.student._id %>][notes]" 
+                                                          placeholder="Notes (optional)" rows="2"><%= record.notes || '' %></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <p class="text-muted">No students enrolled in this class.</p>
+                            <a href="/classes/<%= classItem._id %>/edit" class="btn btn-primary">Add Students</a>
+                        </div>
+                    <% } %>
+                </div>
+                <% if (attendance.records && attendance.records.length > 0) { %>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">
+                                    Present: <span id="presentCount">0</span> | 
+                                    Late: <span id="lateCount">0</span> | 
+                                    Absent: <span id="absentCount">0</span> | 
+                                    Excused: <span id="excusedCount">0</span>
+                                </small>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Attendance
+                                </button>
+                                <a href="/attendance/history/<%= classItem._id %>" class="btn btn-outline-secondary">
+                                    View History
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusRadios = document.querySelectorAll('input[type="radio"][name*="status"]');
+    const markAllPresent = document.getElementById('markAllPresent');
+    const markAllAbsent = document.getElementById('markAllAbsent');
+    const presentCount = document.getElementById('presentCount');
+    const lateCount = document.getElementById('lateCount');
+    const absentCount = document.getElementById('absentCount');
+    const excusedCount = document.getElementById('excusedCount');
+
+    // Update counts when status changes
+    statusRadios.forEach(radio => {
+        radio.addEventListener('change', updateCounts);
+    });
+
+    // Mark all present
+    markAllPresent.addEventListener('click', function() {
+        document.querySelectorAll('input[value="present"]').forEach(radio => {
+            radio.checked = true;
+        });
+        updateCounts();
+    });
+
+    // Mark all absent
+    markAllAbsent.addEventListener('click', function() {
+        document.querySelectorAll('input[value="absent"]').forEach(radio => {
+            radio.checked = true;
+        });
+        updateCounts();
+    });
+
+    function updateCounts() {
+        const present = document.querySelectorAll('input[value="present"]:checked').length;
+        const late = document.querySelectorAll('input[value="late"]:checked').length;
+        const absent = document.querySelectorAll('input[value="absent"]:checked').length;
+        const excused = document.querySelectorAll('input[value="excused"]:checked').length;
+
+        presentCount.textContent = present;
+        lateCount.textContent = late;
+        absentCount.textContent = absent;
+        excusedCount.textContent = excused;
+    }
+
+    // Initial count
+    updateCounts();
+
+    // Date change handler
+    document.getElementById('attendanceDate').addEventListener('change', function() {
+        const newDate = this.value;
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.set('date', newDate);
+        window.location.href = currentUrl.toString();
+    });
+});
+</script>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

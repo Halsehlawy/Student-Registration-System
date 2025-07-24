@@ -34,16 +34,19 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24 * 14 // 14 days
     }
 }));
+
 //ROUTES
 app.use('/auth', authController)
 app.use('/students', require('./controllers/students'));
 app.use('/instructors', require('./controllers/instructors'));
 app.use('/classes', require('./controllers/classes'));
+app.use('/attendance', require('./controllers/attendance'));
+
 app.use((req, res, next) => {
     res.locals.user = req.session.user;
     next();
 });
-// VIEWS
+
 app.get('/', (req, res) => {
   res.render('index.ejs')
 });

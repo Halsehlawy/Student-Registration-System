@@ -1,0 +1,143 @@
+<%- include('../../partials/head', { title: 'Attendance Statistics' }) %>
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>Attendance Statistics</h2>
+                <p class="text-muted mb-0"><%= classItem.name %> - <%= classItem.subject %></p>
+            </div>
+            <div>
+                <a href="/attendance/take/<%= classItem._id %>" class="btn btn-primary me-2">Take Attendance</a>
+                <a href="/attendance" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Overview Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h3><%= totalDays %></h3>
+                        <p class="mb-0">Total Days</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3><%= classItem.students.length %></h3>
+                        <p class="mb-0">Total Students</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <% 
+                        const avgAttendance = stats.length > 0 ? 
+                            (stats.reduce((sum, stat) => sum + parseFloat(stat.attendanceRate), 0) / stats.length).toFixed(1) : 0;
+                        %>
+                        <h3><%= avgAttendance %>%</h3>
+                        <p class="mb-0">Average Attendance</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <% const lowAttendance = stats.filter(stat => parseFloat(stat.attendanceRate) < 75).length; %>
+                        <h3><%= lowAttendance %></h3>
+                        <p class="mb-0">Low Attendance (&lt;75%)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Statistics -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Individual Student Statistics</h5>
+            </div>
+            <div class="card-body">
+                <% if (stats && stats.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Total Days</th>
+                                    <th>Present</th>
+                                    <th>Late</th>
+                                    <th>Absent</th>
+                                    <th>Excused</th>
+                                    <th>Attendance Rate</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% stats.forEach(stat => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="<%= stat.student.image %>" alt="<%= stat.student.name %>" 
+                                                     class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
+                                                <div>
+                                                    <strong><%= stat.student.name %></strong>
+                                                    <br><small class="text-muted">ID: <%= stat.student.id %></small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><%= stat.total %></td>
+                                        <td><span class="badge bg-success"><%= stat.present %></span></td>
+                                        <td><span class="badge bg-warning"><%= stat.late %></span></td>
+                                        <td><span class="badge bg-danger"><%= stat.absent %></span></td>
+                                        <td><span class="badge bg-info"><%= stat.excused %></span></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress me-2" style="width: 100px;">
+                                                    <% 
+                                                    const progressRate = parseFloat(stat.attendanceRate);
+                                                    let progressClass = 'bg-success';
+                                                    if (progressRate < 75) progressClass = 'bg-danger';
+                                                    else if (progressRate < 85) progressClass = 'bg-warning';
+                                                    %>
+                                            <div class="progress-bar <%= progressClass %>" style="width: <%= stat.attendanceRate + '%' %>"></div>
+                                            </div>
+                                            <small><%= stat.attendanceRate %>%</small>
+                                        </div>
+                                        </td>
+                                        <td>
+                                            <% 
+                                            const statusRate = parseFloat(stat.attendanceRate);
+                                            if (statusRate >= 90) { %>
+                                                <span class="badge bg-success">Excellent</span>
+                                            <% } else if (statusRate >= 85) { %>
+                                                <span class="badge bg-primary">Good</span>
+                                            <% } else if (statusRate >= 75) { %>
+                                                <span class="badge bg-warning">Average</span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger">Poor</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No attendance data available yet.</p>
+                        <a href="/attendance/take/<%= classItem._id %>" class="btn btn-primary">Take First Attendance</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

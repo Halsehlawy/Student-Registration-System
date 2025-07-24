@@ -1,0 +1,112 @@
+<%- include('../../partials/head', { title: 'Attendance History' }) %>
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>Attendance History</h2>
+                <p class="text-muted mb-0"><%= classItem.name %> - <%= classItem.subject %></p>
+            </div>
+            <div>
+                <a href="/attendance/take/<%= classItem._id %>" class="btn btn-primary me-2">Take Attendance</a>
+                <a href="/attendance" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <% if (attendanceHistory && attendanceHistory.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Total Students</th>
+                                    <th>Present</th>
+                                    <th>Late</th>
+                                    <th>Absent</th>
+                                    <th>Excused</th>
+                                    <th>Attendance Rate</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% attendanceHistory.forEach(attendance => { %>
+                                    <% 
+                                    const present = attendance.records.filter(r => r.status === 'present').length;
+                                    const late = attendance.records.filter(r => r.status === 'late').length;
+                                    const absent = attendance.records.filter(r => r.status === 'absent').length;
+                                    const excused = attendance.records.filter(r => r.status === 'excused').length;
+                                    const total = attendance.records.length;
+                                    const attendanceRate = total > 0 ? ((present + late) / total * 100).toFixed(1) : 0;
+                                    %>
+                                    <tr>
+                                        <td>
+                                            <strong><%= new Date(attendance.date).toLocaleDateString() %></strong>
+                                            <br><small class="text-muted"><%= new Date(attendance.date).toLocaleDateString('en-US', { weekday: 'long' }) %></small>
+                                        </td>
+                                        <td><%= total %></td>
+                                        <td><span class="badge bg-success"><%= present %></span></td>
+                                        <td><span class="badge bg-warning"><%= late %></span></td>
+                                        <td><span class="badge bg-danger"><%= absent %></span></td>
+                                        <td><span class="badge bg-info"><%= excused %></span></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress me-2" style="width: 100px;">
+                                                    <div class="progress-bar bg-success" style="width: <%= attendanceRate + '%' %>;"></div>
+                                                </div>
+                                                <small><%= attendanceRate %>%</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="/attendance/take/<%= classItem._id %>?date=<%= attendance.date.toISOString().split('T')[0] %>" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <nav aria-label="Attendance history pagination">
+                            <ul class="pagination justify-content-center">
+                                <% if (hasPrev) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                                    </li>
+                                <% } %>
+                                
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+                                
+                                <% if (hasNext) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    <% } %>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No attendance records found for this class.</p>
+                        <a href="/attendance/take/<%= classItem._id %>" class="btn btn-primary">Take First Attendance</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
