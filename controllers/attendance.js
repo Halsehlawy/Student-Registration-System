@@ -3,6 +3,7 @@ const router = express.Router();
 const Attendance = require('../models/attendance');
 const Class = require('../models/class');
 const Student = require('../models/student');
+const User = require('../models/user');
 
 // Middleware to check if user is logged in
 const isAuthenticated = (req, res, next) => {
@@ -12,39 +13,101 @@ const isAuthenticated = (req, res, next) => {
     next();
 };
 
-// GET - Show attendance dashboard
+// Middleware to check if user can access a specific class
+const canAccessClass = async (req, res, next) => {
+    try {
+        const classId = req.params.classId;
+        const user = req.session.user;
+        
+        // Admin can access all classes
+        if (user.role === 'admin') {
+            return next();
+        }
+        
+        // Instructors can only access their own classes
+        if (user.role === 'instructor') {
+            // Get the user's linked instructor
+            const currentUser = await User.findById(user.id).populate('linkedInstructor');
+            
+            if (!currentUser.linkedInstructor) {
+                return res.status(403).render('error', { 
+                    message: 'Access denied: No instructor profile linked to your account' 
+                });
+            }
+            
+            // Check if this class belongs to the instructor
+            const classItem = await Class.findById(classId);
+            if (!classItem || classItem.instructor.toString() !== currentUser.linkedInstructor._id.toString()) {
+                return res.status(403).render('error', { 
+                    message: 'Access denied: You can only manage attendance for your own classes' 
+                });
+            }
+        }
+        
+        next();
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { message: 'Server error' });
+    }
+};
+
+// GET - Show attendance dashboard (filtered by user role)
 router.get('/', isAuthenticated, async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        const classes = await Class.find({})
+        let classFilter = {};
+        
+        // If user is an instructor, only show their classes
+        if (req.session.user.role === 'instructor') {
+            const currentUser = await User.findById(req.session.user.id).populate('linkedInstructor');
+            
+            if (!currentUser.linkedInstructor) {
+                return res.render('management/attendance/index.ejs', { 
+                    classes: [], 
+                    todayAttendance: [],
+                    today: today.toISOString().split('T')[0],
+                    message: 'No instructor profile linked to your account'
+                });
+            }
+            
+            classFilter.instructor = currentUser.linkedInstructor._id;
+        }
+        
+        const classes = await Class.find(classFilter)
             .populate('instructor', 'name')
             .populate('students', 'name')
             .sort({ name: 1 });
             
-        // Get today's attendance records
-        const todayAttendance = await Attendance.find({ date: today })
+        // Get today's attendance records for accessible classes
+        const classIds = classes.map(c => c._id);
+        const todayAttendance = await Attendance.find({ 
+            date: today,
+            class: { $in: classIds }
+        })
             .populate('class', 'name')
             .populate('records.student', 'name');
             
         res.render('management/attendance/index.ejs', { 
             classes, 
             todayAttendance,
-            today: today.toISOString().split('T')[0] // Format for date input
+            today: today.toISOString().split('T')[0],
+            userRole: req.session.user.role
         });
     } catch (error) {
         console.error(error);
         res.render('management/attendance/index.ejs', { 
             classes: [], 
             todayAttendance: [],
-            today: new Date().toISOString().split('T')[0]
+            today: new Date().toISOString().split('T')[0],
+            userRole: req.session.user.role
         });
     }
 });
 
-// GET - Take attendance for a specific class
-router.get('/take/:classId', isAuthenticated, async (req, res) => {
+// GET - Take attendance for a specific class (with access control)
+router.get('/take/:classId', isAuthenticated, canAccessClass, async (req, res) => {
     try {
         const date = req.query.date || new Date().toISOString().split('T')[0];
         const selectedDate = new Date(date);
@@ -86,7 +149,8 @@ router.get('/take/:classId', isAuthenticated, async (req, res) => {
             classItem, 
             attendance, 
             date: date,
-            isExisting: !!attendance._id
+            isExisting: !!attendance._id,
+            userRole: req.session.user.role
         });
     } catch (error) {
         console.error(error);
@@ -94,8 +158,8 @@ router.get('/take/:classId', isAuthenticated, async (req, res) => {
     }
 });
 
-// POST - Save attendance
-router.post('/save/:classId', isAuthenticated, async (req, res) => {
+// POST - Save attendance (with access control)
+router.post('/save/:classId', isAuthenticated, canAccessClass, async (req, res) => {
     try {
         const { date, records } = req.body;
         const selectedDate = new Date(date);
@@ -131,8 +195,8 @@ router.post('/save/:classId', isAuthenticated, async (req, res) => {
     }
 });
 
-// GET - View attendance history for a class
-router.get('/history/:classId', isAuthenticated, async (req, res) => {
+// GET - View attendance history for a class (with access control)
+router.get('/history/:classId', isAuthenticated, canAccessClass, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = 10;
@@ -161,7 +225,8 @@ router.get('/history/:classId', isAuthenticated, async (req, res) => {
             currentPage: page,
             totalPages,
             hasNext: page < totalPages,
-            hasPrev: page > 1
+            hasPrev: page > 1,
+            userRole: req.session.user.role
         });
     } catch (error) {
         console.error(error);

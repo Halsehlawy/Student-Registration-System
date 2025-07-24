@@ -1,23 +1,71 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-// Import models
+const User = require('./models/user');
 const Student = require('./models/student');
 const Instructor = require('./models/instructor');
 const Class = require('./models/class');
 
-// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI);
 
 const seedData = async () => {
     try {
         // Clear existing data
         console.log('Clearing existing data...');
+        await User.deleteMany({});
         await Student.deleteMany({});
         await Instructor.deleteMany({});
         await Class.deleteMany({});
 
-        // Sample Students
+        // Create users first
+        console.log('Creating users...');
+        const adminUser = await User.create({
+            username: 'admin',
+            password: 'password123',
+            role: 'admin'
+        });
+
+        const instructorUser1 = await User.create({
+            username: 'rthompson',
+            password: 'password123',
+            role: 'instructor'
+        });
+
+        const instructorUser2 = await User.create({
+            username: 'lrodriguez',
+            password: 'password123',
+            role: 'instructor'
+        });
+
+        // Create instructors and link them to users
+        console.log('Creating instructors...');
+        const instructor1 = await Instructor.create({
+            id: 2001,
+            name: 'Dr. Robert Thompson',
+            image: 'https://randomuser.me/api/portraits/men/20.jpg',
+            contact: '+1-555-2001',
+            address: '100 University Drive, Springfield, IL 62710',
+            user: instructorUser1._id
+        });
+
+        const instructor2 = await Instructor.create({
+            id: 2002,
+            name: 'Prof. Linda Rodriguez',
+            image: 'https://randomuser.me/api/portraits/women/21.jpg',
+            contact: '+1-555-2002',
+            address: '200 College Avenue, Springfield, IL 62711',
+            user: instructorUser2._id
+        });
+
+        // Link users back to instructors
+        await User.findByIdAndUpdate(instructorUser1._id, { 
+            linkedInstructor: instructor1._id 
+        });
+        await User.findByIdAndUpdate(instructorUser2._id, { 
+            linkedInstructor: instructor2._id 
+        });
+
+        // Create students (existing code)
         console.log('Creating students...');
         const students = await Student.create([
             {
@@ -78,46 +126,6 @@ const seedData = async () => {
             }
         ]);
 
-        // Sample Instructors
-        console.log('Creating instructors...');
-        const instructors = await Instructor.create([
-            {
-                id: 2001,
-                name: 'Dr. Robert Thompson',
-                image: 'https://randomuser.me/api/portraits/men/20.jpg',
-                contact: '+1-555-2001',
-                address: '100 University Drive, Springfield, IL 62710'
-            },
-            {
-                id: 2002,
-                name: 'Prof. Linda Rodriguez',
-                image: 'https://randomuser.me/api/portraits/women/21.jpg',
-                contact: '+1-555-2002',
-                address: '200 College Avenue, Springfield, IL 62711'
-            },
-            {
-                id: 2003,
-                name: 'Dr. James Mitchell',
-                image: 'https://randomuser.me/api/portraits/men/22.jpg',
-                contact: '+1-555-2003',
-                address: '300 Academic Street, Springfield, IL 62712'
-            },
-            {
-                id: 2004,
-                name: 'Prof. Maria Garcia',
-                image: 'https://randomuser.me/api/portraits/women/23.jpg',
-                contact: '+1-555-2004',
-                address: '400 Education Boulevard, Springfield, IL 62713'
-            },
-            {
-                id: 2005,
-                name: 'Dr. William Lee',
-                image: 'https://randomuser.me/api/portraits/men/24.jpg',
-                contact: '+1-555-2005',
-                address: '500 Learning Lane, Springfield, IL 62714'
-            }
-        ]);
-
         // Sample Classes
         console.log('Creating classes...');
         const classes = await Class.create([
@@ -126,7 +134,7 @@ const seedData = async () => {
                 name: 'Introduction to Computer Science',
                 subject: 'Computer Science',
                 schedule: 'Mon, Wed, Fri - 9:00 AM',
-                instructor: instructors[0]._id,
+                instructor: instructor1._id,
                 students: [students[0]._id, students[1]._id, students[2]._id],
                 room: 'CS-101',
                 capacity: 25,
@@ -137,7 +145,7 @@ const seedData = async () => {
                 name: 'Advanced Mathematics',
                 subject: 'Mathematics',
                 schedule: 'Tue, Thu - 10:30 AM',
-                instructor: instructors[1]._id,
+                instructor: instructor2._id,
                 students: [students[1]._id, students[3]._id, students[4]._id, students[5]._id],
                 room: 'MATH-201',
                 capacity: 20,
@@ -190,23 +198,17 @@ const seedData = async () => {
         ]);
 
         console.log('✅ Database seeded successfully!');
-        console.log(`Created ${students.length} students`);
-        console.log(`Created ${instructors.length} instructors`);
-        console.log(`Created ${classes.length} classes`);
-
-        // Display summary
-        console.log('\n📊 Summary:');
-        console.log('Students:', students.map(s => `${s.name} (ID: ${s.id})`));
-        console.log('Instructors:', instructors.map(i => `${i.name} (ID: ${i.id})`));
-        console.log('Classes:', classes.map(c => `${c.name} (ID: ${c.id})`));
-
+        console.log(`Created users: admin, rthompson, lrodriguez`);
+        console.log(`Created ${students.length} students, 2 instructors with user accounts`);
+        console.log('Instructor login credentials:');
+        console.log('- Username: rthompson, Password: password123');
+        console.log('- Username: lrodriguez, Password: password123');
+        
     } catch (error) {
         console.error('❌ Error seeding database:', error);
     } finally {
         mongoose.connection.close();
-        console.log('Database connection closed.');
     }
 };
 
-// Run the seed function
 seedData();

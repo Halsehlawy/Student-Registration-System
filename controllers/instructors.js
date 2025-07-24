@@ -13,7 +13,9 @@ const isAuthenticated = (req, res, next) => {
 // GET - Show all instructors
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        const instructors = await Instructor.find({}).sort({ createdAt: -1 });
+        const instructors = await Instructor.find({})
+            .populate('user', 'username role') // Populate the user relationship
+            .sort({ id: 1 });
         res.render('management/instructors/index.ejs', { instructors });
     } catch (error) {
         console.error(error);
