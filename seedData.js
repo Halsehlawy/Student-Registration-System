@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt'); // Add at top
 require('dotenv').config();
 
 const User = require('./models/user');
@@ -19,50 +20,106 @@ const seedData = async () => {
 
         // Create users first
         console.log('Creating users...');
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash('password123', saltRounds);
+
+        // Create users with hashed passwords
         const adminUser = await User.create({
             username: 'admin',
-            password: 'password123',
+            password: hashedPassword,
             role: 'admin'
         });
 
         const instructorUser1 = await User.create({
             username: 'rthompson',
-            password: 'password123',
+            password: hashedPassword,
             role: 'instructor'
         });
 
         const instructorUser2 = await User.create({
             username: 'lrodriguez',
-            password: 'password123',
+            password: hashedPassword,
+            role: 'instructor'
+        });
+
+        const instructorUser3 = await User.create({
+            username: 'jsmith',
+            password: hashedPassword,
+            role: 'instructor'
+        });
+
+        const instructorUser4 = await User.create({
+            username: 'mwilson',
+            password: hashedPassword,
+            role: 'instructor'
+        });
+
+        const instructorUser5 = await User.create({
+            username: 'djohnson',
+            password: hashedPassword,
             role: 'instructor'
         });
 
         // Create instructors and link them to users
         console.log('Creating instructors...');
-        const instructor1 = await Instructor.create({
-            id: 2001,
-            name: 'Dr. Robert Thompson',
-            image: 'https://randomuser.me/api/portraits/men/20.jpg',
-            contact: '+1-555-2001',
-            address: '100 University Drive, Springfield, IL 62710',
-            user: instructorUser1._id
-        });
-
-        const instructor2 = await Instructor.create({
-            id: 2002,
-            name: 'Prof. Linda Rodriguez',
-            image: 'https://randomuser.me/api/portraits/women/21.jpg',
-            contact: '+1-555-2002',
-            address: '200 College Avenue, Springfield, IL 62711',
-            user: instructorUser2._id
-        });
+        const instructors = await Instructor.create([
+            {
+                id: 2001,
+                name: 'Dr. Robert Thompson',
+                image: 'https://randomuser.me/api/portraits/men/20.jpg',
+                contact: '+1-555-2001',
+                address: '100 University Drive, Springfield, IL 62710',
+                user: instructorUser1._id
+            },
+            {
+                id: 2002,
+                name: 'Prof. Linda Rodriguez',
+                image: 'https://randomuser.me/api/portraits/women/21.jpg',
+                contact: '+1-555-2002',
+                address: '200 College Avenue, Springfield, IL 62711',
+                user: instructorUser2._id
+            },
+            {
+                id: 2003,
+                name: 'Prof. Jennifer Smith',
+                image: 'https://randomuser.me/api/portraits/women/22.jpg',
+                contact: '+1-555-2003',
+                address: '300 Academic Boulevard, Springfield, IL 62712',
+                user: instructorUser3._id
+            },
+            {
+                id: 2004,
+                name: 'Dr. Michael Wilson',
+                image: 'https://randomuser.me/api/portraits/men/23.jpg',
+                contact: '+1-555-2004',
+                address: '400 Education Street, Springfield, IL 62713',
+                user: instructorUser4._id
+            },
+            {
+                id: 2005,
+                name: 'Prof. Diana Johnson',
+                image: 'https://randomuser.me/api/portraits/women/24.jpg',
+                contact: '+1-555-2005',
+                address: '500 Learning Lane, Springfield, IL 62714',
+                user: instructorUser5._id
+            }
+        ]);
 
         // Link users back to instructors
         await User.findByIdAndUpdate(instructorUser1._id, { 
-            linkedInstructor: instructor1._id 
+            linkedInstructor: instructors[0]._id 
         });
         await User.findByIdAndUpdate(instructorUser2._id, { 
-            linkedInstructor: instructor2._id 
+            linkedInstructor: instructors[1]._id 
+        });
+        await User.findByIdAndUpdate(instructorUser3._id, { 
+            linkedInstructor: instructors[2]._id 
+        });
+        await User.findByIdAndUpdate(instructorUser4._id, { 
+            linkedInstructor: instructors[3]._id 
+        });
+        await User.findByIdAndUpdate(instructorUser5._id, { 
+            linkedInstructor: instructors[4]._id 
         });
 
         // Create students (existing code)
@@ -134,7 +191,7 @@ const seedData = async () => {
                 name: 'Introduction to Computer Science',
                 subject: 'Computer Science',
                 schedule: 'Mon, Wed, Fri - 9:00 AM',
-                instructor: instructor1._id,
+                instructor: instructors[0]._id, // Dr. Robert Thompson
                 students: [students[0]._id, students[1]._id, students[2]._id],
                 room: 'CS-101',
                 capacity: 25,
@@ -145,7 +202,7 @@ const seedData = async () => {
                 name: 'Advanced Mathematics',
                 subject: 'Mathematics',
                 schedule: 'Tue, Thu - 10:30 AM',
-                instructor: instructor2._id,
+                instructor: instructors[1]._id, // Prof. Linda Rodriguez
                 students: [students[1]._id, students[3]._id, students[4]._id, students[5]._id],
                 room: 'MATH-201',
                 capacity: 20,
@@ -156,7 +213,7 @@ const seedData = async () => {
                 name: 'Physics Laboratory',
                 subject: 'Physics',
                 schedule: 'Wed - 2:00 PM',
-                instructor: instructors[2]._id,
+                instructor: instructors[0]._id, // Dr. Robert Thompson (assign to existing instructor)
                 students: [students[2]._id, students[4]._id, students[6]._id],
                 room: 'PHY-LAB-1',
                 capacity: 15,
@@ -167,7 +224,7 @@ const seedData = async () => {
                 name: 'English Literature',
                 subject: 'English',
                 schedule: 'Mon, Wed - 11:00 AM',
-                instructor: instructors[3]._id,
+                instructor: instructors[1]._id, // Prof. Linda Rodriguez (assign to existing instructor)
                 students: [students[0]._id, students[3]._id, students[5]._id, students[7]._id],
                 room: 'ENG-301',
                 capacity: 30,
@@ -178,7 +235,7 @@ const seedData = async () => {
                 name: 'Data Structures & Algorithms',
                 subject: 'Computer Science',
                 schedule: 'Tue, Thu - 1:00 PM',
-                instructor: instructors[0]._id,
+                instructor: instructors[0]._id, // Dr. Robert Thompson
                 students: [students[1]._id, students[2]._id, students[6]._id, students[7]._id],
                 room: 'CS-201',
                 capacity: 22,
@@ -189,7 +246,7 @@ const seedData = async () => {
                 name: 'World History',
                 subject: 'History',
                 schedule: 'Mon, Fri - 3:00 PM',
-                instructor: instructors[4]._id,
+                instructor: instructors[1]._id, // Prof. Linda Rodriguez
                 students: [students[0]._id, students[4]._id, students[5]._id],
                 room: 'HIST-101',
                 capacity: 35,
@@ -198,11 +255,15 @@ const seedData = async () => {
         ]);
 
         console.log('✅ Database seeded successfully!');
-        console.log(`Created users: admin, rthompson, lrodriguez`);
-        console.log(`Created ${students.length} students, 2 instructors with user accounts`);
+        console.log(`Created users: admin, rthompson, lrodriguez, jsmith, mwilson, djohnson`);
+        console.log(`Created ${students.length} students, ${instructors.length} instructors with user accounts`);
+        console.log(`Created ${classes.length} classes`);
         console.log('Instructor login credentials:');
         console.log('- Username: rthompson, Password: password123');
         console.log('- Username: lrodriguez, Password: password123');
+        console.log('- Username: jsmith, Password: password123');
+        console.log('- Username: mwilson, Password: password123');
+        console.log('- Username: djohnson, Password: password123');
         
     } catch (error) {
         console.error('❌ Error seeding database:', error);

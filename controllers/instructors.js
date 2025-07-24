@@ -1,69 +1,69 @@
 const express = require('express');
 const router = express.Router();
 const Instructor = require('../models/instructor');
+const { isAuthenticated, canModify } = require('../middleware/auth');
 
-// Middleware to check if user is logged in
-const isAuthenticated = (req, res, next) => {
-    if (!req.session.user) {
-        return res.redirect('/auth/login');
-    }
-    next();
-};
-
-// GET - Show all instructors
+// GET - Show all instructors (everyone can view)
 router.get('/', isAuthenticated, async (req, res) => {
     try {
         const instructors = await Instructor.find({})
-            .populate('user', 'username role') // Populate the user relationship
+            .populate('user', 'username role')
             .sort({ id: 1 });
-        res.render('management/instructors/index.ejs', { instructors });
+        res.render('management/instructors/index.ejs', { 
+            instructors,
+            userRole: req.session.user.role
+        });
     } catch (error) {
         console.error(error);
-        res.render('management/instructors/index.ejs', { instructors: [] });
+        res.render('management/instructors/index.ejs', { 
+            instructors: [],
+            userRole: req.session.user.role
+        });
     }
 });
 
-// GET - Show new instructor form
-router.get('/new', isAuthenticated, (req, res) => {
+// GET - Show new instructor form (ADMIN ONLY)
+router.get('/new', isAuthenticated, canModify, (req, res) => {
     res.render('management/instructors/new.ejs');
 });
 
-// GET - Show specific instructor details
+// POST - Create new instructor (ADMIN ONLY)
+router.post('/', isAuthenticated, canModify, async (req, res) => {
+    try {
+        const instructor = new Instructor(req.body);
+        await instructor.save();
+        res.redirect('/instructors');
+    } catch (error) {
+        console.error(error);
+        res.redirect('/instructors/new');
+    }
+});
+
+// GET - Show instructor details (everyone can view)
 router.get('/:id', isAuthenticated, async (req, res) => {
+    try {
+        const instructor = await Instructor.findById(req.params.id)
+            .populate('user', 'username role');
+        if (!instructor) {
+            return res.redirect('/instructors');
+        }
+        res.render('management/instructors/show.ejs', { 
+            instructor,
+            userRole: req.session.user.role
+        });
+    } catch (error) {
+        console.error(error);
+        res.redirect('/instructors');
+    }
+});
+
+// GET - Show edit form (ADMIN ONLY)
+router.get('/:id/edit', isAuthenticated, canModify, async (req, res) => {
     try {
         const instructor = await Instructor.findById(req.params.id);
         if (!instructor) {
             return res.redirect('/instructors');
         }
-        res.render('management/instructors/show.ejs', { instructor });
-    } catch (error) {
-        console.error(error);
-        res.redirect('/instructors');
-    }
-});
-
-// POST - Create new instructor
-router.post('/', isAuthenticated, async (req, res) => {
-    try {
-        const { id, name, image, contact, address } = req.body;
-        await Instructor.create({
-            id: parseInt(id),
-            name,
-            image,
-            contact,
-            address
-        });
-        res.redirect('/instructors');
-    } catch (error) {
-        console.error(error);
-        res.redirect('/instructors');
-    }
-});
-
-// GET - Show edit form for specific instructor
-router.get('/:id/edit', isAuthenticated, async (req, res) => {
-    try {
-        const instructor = await Instructor.findById(req.params.id);
         res.render('management/instructors/edit.ejs', { instructor });
     } catch (error) {
         console.error(error);
@@ -71,26 +71,19 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
     }
 });
 
-// PUT - Update specific instructor
-router.put('/:id', isAuthenticated, async (req, res) => {
+// PUT - Update instructor (ADMIN ONLY)
+router.put('/:id', isAuthenticated, canModify, async (req, res) => {
     try {
-        const { id, name, image, contact, address } = req.body;
-        await Instructor.findByIdAndUpdate(req.params.id, {
-            id: parseInt(id),
-            name,
-            image,
-            contact,
-            address
-        });
-        res.redirect('/instructors');
+        await Instructor.findByIdAndUpdate(req.params.id, req.body);
+        res.redirect(`/instructors/${req.params.id}`);
     } catch (error) {
         console.error(error);
-        res.redirect('/instructors');
+        res.redirect(`/instructors/${req.params.id}/edit`);
     }
 });
 
-// DELETE - Delete specific instructor
-router.delete('/:id', isAuthenticated, async (req, res) => {
+// DELETE - Delete instructor (ADMIN ONLY)
+router.delete('/:id', isAuthenticated, canModify, async (req, res) => {
     try {
         await Instructor.findByIdAndDelete(req.params.id);
         res.redirect('/instructors');

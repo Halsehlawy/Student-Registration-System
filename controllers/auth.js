@@ -1,7 +1,7 @@
 const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcrypt');
-const User = require('../models/user.js');
+const User = require('../models/user');
+const router = express.Router();
 
 // Register view
 router.get('/register', (req, res) => {
@@ -39,10 +39,11 @@ router.post('/register', async (req, res) => {
             role
         });
 
-        // Set session user
+        // Set session user - FIX: Make consistent with login
         req.session.user = {
+            id: newUser._id,        // Use 'id' consistently
             username: newUser.username,
-            _id: newUser._id,
+            role: newUser.role      // Add role to session
         };
 
         req.session.save(() => {
@@ -54,43 +55,79 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login view
+// GET - Show login form
 router.get('/login', (req, res) => {
-    res.render('auth/login.ejs');
+    if (req.session.user) {
+        return res.redirect('/');
+    }
+    res.render('auth/login.ejs', { error: null });
 });
 
-// POST TO SIGN THE USER IN (CREATE SESSION)
-router.post('/log-in', async (req, res) => {
+// POST - Process login
+router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        const userInDatabase = await User.findOne({ username });
-        if (!userInDatabase) {
-            return res.send('Login failed. Please try again.');
+        
+        console.log('Login attempt:', username); // Debug log
+        
+        const user = await User.findOne({ username });
+        
+        if (!user) {
+            console.log('User not found:', username); // Debug log
+            return res.render('auth/login.ejs', { 
+                error: 'Invalid username or password' 
+            });
         }
-        const validPassword = await bcrypt.compare(password, userInDatabase.password);
-        if (!validPassword) {
-            return res.send('Login failed. Please try again.');
+        
+        console.log('User found, checking password...'); // Debug log
+        
+        // Use bcrypt.compare directly instead of user.comparePassword
+        const isMatch = await bcrypt.compare(password, user.password);
+        
+        if (!isMatch) {
+            console.log('Password mismatch'); // Debug log
+            return res.render('auth/login.ejs', { 
+                error: 'Invalid username or password' 
+            });
         }
+        
+        console.log('Login successful for:', username); // Debug log
+        
+        // Store user in session
         req.session.user = {
-            username: userInDatabase.username,
-            _id: userInDatabase._id,
+            id: user._id,
+            username: user.username,
+            role: user.role
         };
-        req.session.save(() => {
-            res.redirect('/');
-        });
+        
+        res.redirect('/');
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error logging in');
+        console.error('Login error:', error);
+        res.render('auth/login.ejs', { 
+            error: 'An error occurred during login' 
+        });
     }
 });
 
+// GET - Logout (for direct navigation)
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+        }
+        res.redirect('/auth/login');
+    });
+});
 
-// SIGN OUT VIEW
-router.get('/log-out', (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/')
-    })
-})
+// POST - Logout (for form submission)
+router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+        }
+        res.redirect('/auth/login');
+    });
+});
 
 module.exports = router;
 

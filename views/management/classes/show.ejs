@@ -5,7 +5,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Class Details</h2>
             <div>
-                <a href="/classes/<%= classItem._id %>/edit" class="btn btn-primary me-2">Edit Class</a>
+                <!-- Only show edit button for admins -->
+                <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                    <a href="/classes/<%= classItem._id %>/edit" class="btn btn-primary me-2">Edit Class</a>
+                <% } %>
                 <a href="/classes" class="btn btn-secondary">Back to Classes</a>
             </div>
         </div>
@@ -136,10 +139,13 @@
                 </div>
                 
                 <div class="mt-4 d-flex justify-content-end">
-                    <form method="POST" action="/classes/<%= classItem._id %>?_method=DELETE" 
-                          class="d-inline" onsubmit="return confirm('Are you sure you want to delete this class?')">
-                        <button type="submit" class="btn btn-danger">Delete Class</button>
-                    </form>
+                    <!-- Only show delete button for admins -->
+                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                        <form method="POST" action="/classes/<%= classItem._id %>?_method=DELETE" 
+                              class="d-inline" onsubmit="return confirm('Are you sure you want to delete this class?')">
+                            <button type="submit" class="btn btn-danger">Delete Class</button>
+                        </form>
+                    <% } %>
                 </div>
             </div>
         </div>

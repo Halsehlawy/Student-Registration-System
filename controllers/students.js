@@ -1,67 +1,66 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/student');
+const { isAuthenticated, canModify } = require('../middleware/auth');
 
-// Middleware to check if user is logged in
-const isAuthenticated = (req, res, next) => {
-    if (!req.session.user) {
-        return res.redirect('/auth/login');
-    }
-    next();
-};
-
-// GET - Show all students
+// GET - Show all students (everyone can view)
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        const students = await Student.find({}).sort({ createdAt: -1 });
-        res.render('management/students/index.ejs', { students });
+        const students = await Student.find({}).sort({ id: 1 });
+        res.render('management/students/index.ejs', { 
+            students,
+            userRole: req.session.user.role
+        });
     } catch (error) {
         console.error(error);
-        res.render('management/students/index.ejs', { students: [] });
+        res.render('management/students/index.ejs', { 
+            students: [],
+            userRole: req.session.user.role
+        });
     }
 });
 
-// GET - Show new student form
-router.get('/new', isAuthenticated, (req, res) => {
+// GET - Show new student form (ADMIN ONLY)
+router.get('/new', isAuthenticated, canModify, (req, res) => {
     res.render('management/students/new.ejs');
 });
 
-// GET - Show specific student details
+// POST - Create new student (ADMIN ONLY)
+router.post('/', isAuthenticated, canModify, async (req, res) => {
+    try {
+        const student = new Student(req.body);
+        await student.save();
+        res.redirect('/students');
+    } catch (error) {
+        console.error(error);
+        res.redirect('/students/new');
+    }
+});
+
+// GET - Show student details (everyone can view)
 router.get('/:id', isAuthenticated, async (req, res) => {
     try {
         const student = await Student.findById(req.params.id);
         if (!student) {
             return res.redirect('/students');
         }
-        res.render('management/students/show.ejs', { student });
-    } catch (error) {
-        console.error(error);
-        res.redirect('/students');
-    }
-});
-
-// POST - Create new student
-router.post('/', isAuthenticated, async (req, res) => {
-    try {
-        const { id, name, image, parent_contact, address } = req.body;
-        await Student.create({
-            id: parseInt(id),
-            name,
-            image,
-            parent_contact,
-            address
+        res.render('management/students/show.ejs', { 
+            student,
+            userRole: req.session.user.role
         });
-        res.redirect('/students');
     } catch (error) {
         console.error(error);
         res.redirect('/students');
     }
 });
 
-// GET - Show edit form for specific student
-router.get('/:id/edit', isAuthenticated, async (req, res) => {
+// GET - Show edit form (ADMIN ONLY)
+router.get('/:id/edit', isAuthenticated, canModify, async (req, res) => {
     try {
         const student = await Student.findById(req.params.id);
+        if (!student) {
+            return res.redirect('/students');
+        }
         res.render('management/students/edit.ejs', { student });
     } catch (error) {
         console.error(error);
@@ -69,26 +68,19 @@ router.get('/:id/edit', isAuthenticated, async (req, res) => {
     }
 });
 
-// PUT - Update specific student
-router.put('/:id', isAuthenticated, async (req, res) => {
+// PUT - Update student (ADMIN ONLY)
+router.put('/:id', isAuthenticated, canModify, async (req, res) => {
     try {
-        const { id, name, image, parent_contact, address } = req.body;
-        await Student.findByIdAndUpdate(req.params.id, {
-            id: parseInt(id),
-            name,
-            image,
-            parent_contact,
-            address
-        });
-        res.redirect('/students');
+        await Student.findByIdAndUpdate(req.params.id, req.body);
+        res.redirect(`/students/${req.params.id}`);
     } catch (error) {
         console.error(error);
-        res.redirect('/students');
+        res.redirect(`/students/${req.params.id}/edit`);
     }
 });
 
-// DELETE - Delete specific student
-router.delete('/:id', isAuthenticated, async (req, res) => {
+// DELETE - Delete student (ADMIN ONLY)
+router.delete('/:id', isAuthenticated, canModify, async (req, res) => {
     try {
         await Student.findByIdAndDelete(req.params.id);
         res.redirect('/students');

@@ -174,3 +174,116 @@
         padding: 3rem 0;
     }
 }
+
+.dropdown-menu {
+    min-width: 140px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--bs-border-color);
+}
+
+.dropdown-item {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
+}
+
+.dropdown-toggle {
+    border-radius: 6px;
+    font-size: 0.875rem;
+    padding: 6px 12px;
+}
+
+.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.2rem rgba(107, 70, 193, 0.25);
+}
+
+/* Table Styling */
+.table-responsive {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+    background-color: var(--bs-gray-50);
+    border-top: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--bs-gray-700);
+    padding: 12px 16px;
+}
+
+.table td {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(107, 70, 193, 0.05);
+}
+
+/* Badge Styling */
+.badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+/* Dark mode adjustments for dropdowns */
+[data-bs-theme="dark"] .dropdown-menu {
+    background-color: var(--bs-dark);
+    border-color: #495057;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: #495057;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .dropdown-item.text-danger:hover {
+    background-color: #58151c;
+    color: #f5c2c7;
+}
+
+[data-bs-theme="dark"] .table th {
+    background-color: var(--bs-gray-800);
+    color: var(--bs-gray-200);
+}
+
+[data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(139, 92, 246, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table th, .table td {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+    
+    .dropdown-menu {
+        min-width: 120px;
+    }
+    
+    .dropdown-item {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}
