@@ -18,6 +18,10 @@ mongoose.connection.on('connected', () => {
     console.log(`Connected to MongoDB ${mongoose.connection.name}`);
 });
 
+// VIEW ENGINE
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 // MIDDLEWARE
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')))
