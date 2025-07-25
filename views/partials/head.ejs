@@ -100,7 +100,29 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-github">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Student Registration System</a>
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="/assets/school.svg" alt="School Logo" width="32" height="32" class="me-2">
+                SRS
+            </a>
+            
+            <!-- Navigation Links -->
+            <% if (locals.user) { %>
+                <div class="navbar-nav me-auto">
+                    <a class="nav-link" href="/students">
+                        <i class="fas fa-user-graduate me-1"></i>Students
+                    </a>
+                    <a class="nav-link" href="/instructors">
+                        <i class="fas fa-chalkboard-teacher me-1"></i>Instructors
+                    </a>
+                    <a class="nav-link" href="/classes">
+                        <i class="fas fa-book me-1"></i>Classes
+                    </a>
+                    <a class="nav-link" href="/attendance">
+                        <i class="fas fa-check-circle me-1"></i>Attendance
+                    </a>
+                </div>
+            <% } %>
+            
             <div class="navbar-nav ms-auto d-flex align-items-center">
                 <button class="btn theme-toggle me-3" id="darkModeToggle">
                     <svg class="theme-icon" id="moonIcon" viewBox="0 0 24 24">

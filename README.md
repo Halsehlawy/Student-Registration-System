@@ -15,7 +15,7 @@ This application was built to address the common challenges faced by educational
 ## Getting Started
 
 ### Live Application
-🚀 **[View Deployed App](#)**
+🚀 **[View Deployed App](https://student-registration-system-097d57e1c664.herokuapp.com/)**
 
 ### Planning Materials
 📋 **[Project Planning & Wireframes](https://trello.com/b/aFO6fzND/project-2)** 
