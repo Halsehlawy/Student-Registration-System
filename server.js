@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 
 const authController = require('./controllers/auth');
 //SERVER
-const port = process.env.PORT ? process.env.PORT : '3000'
+const port = process.env.PORT || 3000;
 const app = express();
 
 //DATABASE
@@ -52,7 +52,6 @@ app.get('/', (req, res) => {
   res.render('index.ejs')
 });
 
-
-app.listen(port,()=>{
+app.listen(port, () => {
     console.log(`Server running on port ${port}`)
-})
+});
