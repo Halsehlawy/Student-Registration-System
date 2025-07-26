@@ -14,12 +14,6 @@ try {
     const port = process.env.PORT || 3000;
     const app = express();
 
-    // Debug environment variables
-    console.log('Environment check:');
-    console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
-    console.log('SESSION_SECRET exists:', !!process.env.SESSION_SECRET);
-    console.log('PORT:', port);
-
     //DATABASE
     mongoose.connect(process.env.MONGODB_URI)
     mongoose.connection.on('connected', () => {
@@ -71,8 +65,30 @@ try {
     app.use('/classes', require('./controllers/classes'));
     app.use('/attendance', require('./controllers/attendance'));
 
-    app.get('/', (req, res) => {
-        res.render('index.ejs')
+    app.get('/', async (req, res) => {
+        try {
+            // Fetch real data from database
+            const Student = require('./models/student');
+            const Instructor = require('./models/instructor');
+            const Class = require('./models/class');
+            
+            const studentCount = await Student.countDocuments();
+            const instructorCount = await Instructor.countDocuments();
+            const classCount = await Class.countDocuments();
+            
+            res.render('index.ejs', {
+                stats: {
+                    students: studentCount,
+                    instructors: instructorCount,
+                    classes: classCount
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+            res.render('index.ejs', {
+                stats: { students: 0, instructors: 0, classes: 0 }
+            });
+        }
     });
 
     // 404 Handler - Must be after all other routes

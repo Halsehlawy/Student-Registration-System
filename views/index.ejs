@@ -14,17 +14,34 @@
     <div class="container">
         <div class="row justify-content-center text-center">
             <div class="col-lg-10 col-xl-8">
-                <h1 class="hero-title">Student Registration System</h1>
-                <p class="hero-subtitle">Streamline your academic journey with our intuitive platform</p>
+                <div class="hero-badge mb-4">
+                    <span class="badge bg-gradient-primary">✨ Modern Education Platform</span>
+                </div>
+                <h1 class="hero-title">
+                    Transform Your 
+                    <span class="text-gradient">Academic Experience</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Experience seamless student management with our cutting-edge platform designed for modern education
+                </p>
                 <% if (!locals.user) { %>
-                    <div class="hero-buttons mb-4">
-                        <a class="btn btn-primary btn-lg me-3" href="/auth/register">Get Started</a>
-                        <a class="btn btn-outline-secondary btn-lg" href="/auth/login">Sign In</a>
+                    <div class="hero-buttons mb-5">
+                        <a class="btn btn-primary btn-lg me-3 pulse-btn" href="/auth/register">
+                            <i class="fas fa-rocket me-2"></i>Get Started Free
+                        </a>
+                        <a class="btn btn-outline-light btn-lg" href="/auth/login">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </a>
                     </div>
                 <% } else { %>
                     <div class="welcome-message mb-4">
-                        <h3>Welcome back, <%= user.username %>! 👋</h3>
-                        <p class="text-muted">Ready to continue your learning journey?</p>
+                        <div class="welcome-card">
+                            <div class="welcome-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <h3>Welcome back, <span class="text-gradient"><%= user.username %></span>! </h3>
+                            <p class="text-muted"></p>
+                        </div>
                     </div>
                 <% } %>
             </div>
@@ -32,91 +49,176 @@
     </div>
 </section>
 
-<!-- Features Section -->
+<!-- Dashboard Section -->
 <% if (locals.user) { %>
 <section class="dashboard-section">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center mb-5">
-                <h2>Quick Access</h2>
-                <p class="text-muted">Access your tools and resources</p>
+                <h2 class="section-title">
+                    <span class="text-gradient">Quick Access Dashboard</span>
+                </h2>
+                <p class="section-subtitle">Access your tools and resources with one click</p>
             </div>
         </div>
         <div class="row g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card" onclick="window.location.href='/students'" style="cursor: pointer;">
-                    <div class="feature-icon">
+            <div class="col-md-6 col-xl-3">
+                <div class="feature-card modern-card" onclick="window.location.href='/students'" style="cursor: pointer;">
+                    <div class="feature-icon students-icon">
                         <img src="/assets/student.svg" alt="Students" width="28" height="28">
                     </div>
-                    <h5>Students</h5>
-                    <p>Manage student profiles, enrollment, and academic records</p>
+                    <h5>Student Management</h5>
+                    <p>Manage student profiles, enrollment, and academic records with ease</p>
+                    <div class="card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card" onclick="window.location.href='/instructors'" style="cursor: pointer;">
-                    <div class="feature-icon">
+            <div class="col-md-6 col-xl-3">
+                <div class="feature-card modern-card" onclick="window.location.href='/instructors'" style="cursor: pointer;">
+                    <div class="feature-icon instructors-icon">
                         <img src="/assets/teacher.svg" alt="Instructors" width="28" height="28">
                     </div>
-                    <h5>Instructors</h5>
-                    <p>Access instructor information and teaching assignments</p>
+                    <h5>Instructor Portal</h5>
+                    <p>Access instructor information and manage teaching assignments</p>
+                    <div class="card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card" onclick="window.location.href='/classes'" style="cursor: pointer;">
-                    <div class="feature-icon">
+            <div class="col-md-6 col-xl-3">
+                <div class="feature-card modern-card" onclick="window.location.href='/classes'" style="cursor: pointer;">
+                    <div class="feature-icon classes-icon">
                         <img src="/assets/class.svg" alt="Classes" width="28" height="28">
                     </div>
-                    <h5>Classes</h5>
-                    <p>Browse available courses and class schedules</p>
+                    <h5>Class Scheduler</h5>
+                    <p>Browse available courses and manage class schedules efficiently</p>
+                    <div class="card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card" onclick="window.location.href='/attendance'" style="cursor: pointer;">
-                    <div class="feature-icon">
+            <div class="col-md-6 col-xl-3">
+                <div class="feature-card modern-card" onclick="window.location.href='/attendance'" style="cursor: pointer;">
+                    <div class="feature-icon attendance-icon">
                         <img src="/assets/attendance.svg" alt="Attendance" width="28" height="28">
                     </div>
-                    <h5>Attendance</h5>
-                    <p>Track and manage student attendance records</p>
+                    <h5>Attendance Tracker</h5>
+                    <p>Track and manage student attendance records in real-time</p>
+                    <div class="card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Database Statistics Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="activity-section">
+                    <h3 class="mb-4">
+                        <i class="fas fa-chart-bar me-2 text-primary"></i>Current Statistics
+                    </h3>
+                    <div class="activity-grid">
+                        <div class="activity-item">
+                            <div class="activity-icon bg-success">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6><%= stats.students %> Students</h6>
+                                <p class="text-muted mb-0">Total registered students</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon bg-info">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6><%= stats.instructors %> Instructors</h6>
+                                <p class="text-muted mb-0">Teaching staff members</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon bg-warning">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6><%= stats.classes %> Classes</h6>
+                                <p class="text-muted mb-0">Available courses</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 <% } else { %>
+<!-- Features Section for Non-logged Users -->
 <section class="features-section">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center mb-5">
-                <h2>Why Choose Our Platform?</h2>
-                <p class="text-muted">Everything you need for efficient academic management</p>
+                <h2 class="section-title">
+                    <span class="text-gradient">Why Choose Our Platform?</span>
+                </h2>
+                <p class="section-subtitle">Everything you need for efficient academic management in one place</p>
             </div>
         </div>
         <div class="row g-4">
             <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="feature-card modern-card">
+                    <div class="feature-icon ease-icon">
                         <img src="/assets/dashboard.svg" alt="Easy to Use" width="28" height="28">
                     </div>
-                    <h5>Easy to Use</h5>
-                    <p>Intuitive interface designed for students, instructors, and administrators</p>
+                    <h5>Simple Interface</h5>
+                    <p>Clean and straightforward design for managing academic records and information</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check text-success me-2"></i>Easy navigation</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Form-based data entry</li>
+                    </ul>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="feature-card modern-card">
+                    <div class="feature-icon security-icon">
                         <img src="/assets/security.svg" alt="Secure" width="28" height="28">
                     </div>
-                    <h5>Secure & Reliable</h5>
-                    <p>Your data is protected with industry-standard security measures</p>
+                    <h5>Secure Platform</h5>
+                    <p>User authentication and session management to protect your academic data</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check text-success me-2"></i>Password protection</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Session management</li>
+                    </ul>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="feature-card modern-card">
+                    <div class="feature-icon mobile-icon">
                         <img src="/assets/mobile.svg" alt="Mobile Friendly" width="28" height="28">
                     </div>
-                    <h5>Mobile Friendly</h5>
-                    <p>Access your information anywhere, anytime on any device</p>
+                    <h5>Responsive Design</h5>
+                    <p>Works on desktop and mobile browsers with responsive layouts</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check text-success me-2"></i>Mobile-friendly web interface</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Works in any browser</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <div class="cta-section">
+                    <h3 class="mb-3">Ready to Try Our Student Management System?</h3>
+                    <p class="mb-4 text-muted">A simple web application for managing student records and academic data</p>
+                    <a href="/auth/register" class="btn btn-primary btn-lg me-3 pulse-btn">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </a>
+                    <a href="/auth/login" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </a>
                 </div>
             </div>
         </div>
