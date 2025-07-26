@@ -29,16 +29,13 @@
                         <a class="btn btn-primary btn-lg me-3 pulse-btn" href="/auth/register">
                             <i class="fas fa-rocket me-2"></i>Get Started Free
                         </a>
-                        <a class="btn btn-outline-light btn-lg" href="/auth/login">
+                        <a class="btn btn-outline-primary btn-lg" href="/auth/login">
                             <i class="fas fa-sign-in-alt me-2"></i>Sign In
                         </a>
                     </div>
                 <% } else { %>
                     <div class="welcome-message mb-4">
                         <div class="welcome-card">
-                            <div class="welcome-icon">
-                                <i class="fas fa-user-graduate"></i>
-                            </div>
                             <h3>Welcome back, <span class="text-gradient"><%= user.username %></span>! </h3>
                             <p class="text-muted"></p>
                         </div>

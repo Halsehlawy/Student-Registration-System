@@ -159,29 +159,12 @@ a:hover { color: var(--accent-hover); }
 }
 
 .welcome-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
     border-radius: 24px;
     padding: 2.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(107, 70, 193, 0.1);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
-
-.welcome-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    box-shadow: 0 10px 30px rgba(107, 70, 193, 0.3);
-}
-
-.welcome-icon i {
-    font-size: 1.8rem;
-    color: white;
 }
 
 /* Section Styling */
@@ -327,12 +310,12 @@ a:hover { color: var(--accent-hover); }
 
 /* Activity Section */
 .activity-section {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(107, 70, 193, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .activity-grid {
