@@ -65,7 +65,7 @@ try {
     });
 
     //ROUTES
-    app.use('/auth', authController)
+    app.use('/auth', authController);
     app.use('/students', require('./controllers/students'));
     app.use('/instructors', require('./controllers/instructors'));
     app.use('/classes', require('./controllers/classes'));
@@ -73,6 +73,17 @@ try {
 
     app.get('/', (req, res) => {
         res.render('index.ejs')
+    });
+
+    // 404 Handler - Must be after all other routes
+    app.use('*', (req, res) => {
+        res.status(404).render('errors/404.ejs');
+    });
+
+    // Error Handler
+    app.use((err, req, res, next) => {
+        console.error(err.stack);
+        res.status(500).render('errors/500.ejs');
     });
 
     app.listen(port, () => {

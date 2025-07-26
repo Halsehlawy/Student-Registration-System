@@ -1,0 +1,56 @@
+<%- include('../partials/head', { title: '403 - Access Denied' }) %>
+
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+    <div class="text-center">
+        <div class="error-content">
+            <!-- 403 Number -->
+            <h1 class="display-1 fw-bold text-warning mb-0" style="font-size: 8rem;">403</h1>
+            
+            <!-- Error Message -->
+            <h2 class="h3 mb-3">Access Denied</h2>
+            <p class="text-muted mb-4 fs-5">
+                You don't have permission to access this resource.
+            </p>
+            
+            <!-- Illustration -->
+            <div class="mb-4">
+                <i class="fas fa-ban fa-4x text-warning opacity-50"></i>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home me-2"></i>Go Home
+                </a>
+                <button onclick="history.back()" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Go Back
+                </button>
+            </div>
+            
+            <!-- Help Text -->
+            <div class="mt-4">
+                <p class="text-muted small">
+                    If you believe you should have access, please contact the administrator.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-content {
+        max-width: 500px;
+    }
+    
+    @media (max-width: 576px) {
+        .display-1 {
+            font-size: 5rem !important;
+        }
+    }
+    
+    .btn {
+        min-width: 120px;
+    }
+</style>
+
+<%- include('../partials/footer') %>

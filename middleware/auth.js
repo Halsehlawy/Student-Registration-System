@@ -8,12 +8,11 @@ const isAuthenticated = (req, res, next) => {
 
 // Check if user can edit/delete (admin only)
 const canModify = (req, res, next) => {
-    if (!req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).render('error', { 
-            message: 'Access denied: Only administrators can edit or delete records' 
-        });
+    if (req.session.user && req.session.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).render('errors/403.ejs');
     }
-    next();
 };
 
 module.exports = {
