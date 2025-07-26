@@ -3,128 +3,130 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const router = express.Router();
 
-// Register view
-router.get('/register', (req, res) => {
-    res.render('auth/register.ejs');
-});
-
-// Register user to DB and create session
-router.post('/register', async (req, res) => {
-    try {
-        const { username, password, confirmPassword, role } = req.body;
-        // Check if username already exists
-        const userInDatabase = await User.findOne({ username });
-        if (userInDatabase) {
-            return res.send('Username already taken.');
-        }
-        // Check that password and confirmPassword are the same
-        if (password !== confirmPassword) {
-            return res.send('Password and confirm password must match.');
-        }
-        // Password complexity: at least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
-        const complexityRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-        if (!complexityRegex.test(password)) {
-            return res.send(
-                'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.'
-            );
-        }
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create new user
-        const newUser = await User.create({
-            username,
-            password: hashedPassword,
-            role
-        });
-
-        // Set session user - FIX: Make consistent with login
-        req.session.user = {
-            id: newUser._id,        // Use 'id' consistently
-            username: newUser.username,
-            role: newUser.role      // Add role to session
-        };
-
-        req.session.save(() => {
-            res.redirect('/');
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error registering user');
-    }
-});
-
 // GET - Show login form
 router.get('/login', (req, res) => {
-    if (req.session.user) {
-        return res.redirect('/');
-    }
-    res.render('auth/login.ejs', { error: null });
+    const error = req.session.error;
+    req.session.error = null; // Clear error after displaying
+    res.render('auth/login.ejs', { error });
 });
 
-// POST - Process login
+// POST - Handle login
 router.post('/login', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        // Trim whitespace from input
+        const username = req.body.username?.trim();
+        const password = req.body.password?.trim();
         
-        console.log('Login attempt:', username); // Debug log
+        // Validate input
+        if (!username || !password) {
+            req.session.error = 'Please provide both username and password';
+            return res.redirect('/auth/login');
+        }
         
+        // Check if user exists
         const user = await User.findOne({ username });
-        
         if (!user) {
-            console.log('User not found:', username); // Debug log
-            return res.render('auth/login.ejs', { 
-                error: 'Invalid username or password' 
-            });
+            req.session.error = 'No account found with this username';
+            return res.redirect('/auth/login');
         }
-        
-        console.log('User found, checking password...'); // Debug log
-        
-        // Use bcrypt.compare directly instead of user.comparePassword
-        const isMatch = await bcrypt.compare(password, user.password);
-        
-        if (!isMatch) {
-            console.log('Password mismatch'); // Debug log
-            return res.render('auth/login.ejs', { 
-                error: 'Invalid username or password' 
-            });
+
+        // Check password
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            req.session.error = 'Invalid password. Please try again.';
+            return res.redirect('/auth/login');
         }
-        
-        console.log('Login successful for:', username); // Debug log
-        
-        // Store user in session
+
+        // Successful login
         req.session.user = {
             id: user._id,
             username: user.username,
             role: user.role
         };
-        
+
+        req.session.success = `Welcome back, ${user.username}!`;
         res.redirect('/');
     } catch (error) {
         console.error('Login error:', error);
-        res.render('auth/login.ejs', { 
-            error: 'An error occurred during login' 
-        });
+        req.session.error = 'Something went wrong. Please try again.';
+        res.redirect('/auth/login');
     }
 });
 
-// GET - Logout (for direct navigation)
-router.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Logout error:', err);
-        }
-        res.redirect('/auth/login');
-    });
+// GET - Show register form
+router.get('/register', (req, res) => {
+    const error = req.session.error;
+    req.session.error = null;
+    res.render('auth/register.ejs', { error });
 });
 
-// POST - Logout (for form submission)
-router.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Logout error:', err);
+// POST - Handle registration
+router.post('/register', async (req, res) => {
+    try {
+        // Trim whitespace from input
+        const username = req.body.username?.trim();
+        const password = req.body.password?.trim();
+        const role = req.body.role?.trim() || 'student';
+
+        // Validate input
+        if (!username || !password) {
+            req.session.error = 'Please provide both username and password';
+            return res.redirect('/auth/register');
         }
+
+        // Validate username length
+        if (username.length < 3) {
+            req.session.error = 'Username must be at least 3 characters long';
+            return res.redirect('/auth/register');
+        }
+
+        // Validate password length
+        if (password.length < 6) {
+            req.session.error = 'Password must be at least 6 characters long';
+            return res.redirect('/auth/register');
+        }
+
+        // Check for spaces in username
+        if (username.includes(' ')) {
+            req.session.error = 'Username cannot contain spaces';
+            return res.redirect('/auth/register');
+        }
+
+        // Check if username already exists (case-insensitive)
+        const existingUser = await User.findOne({ 
+            username: { $regex: new RegExp(`^${username}$`, 'i') }
+        });
+        if (existingUser) {
+            req.session.error = 'Username already exists. Please choose a different one.';
+            return res.redirect('/auth/register');
+        }
+
+        // Hash password and create user
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await User.create({
+            username: username.toLowerCase(), // Store in lowercase
+            password: hashedPassword,
+            role: role
+        });
+
+        req.session.user = {
+            id: newUser._id,
+            username: newUser.username,
+            role: newUser.role
+        };
+
+        req.session.success = `Account created successfully! Welcome, ${newUser.username}!`;
+        res.redirect('/');
+    } catch (error) {
+        console.error('Registration error:', error);
+        req.session.error = 'Failed to create account. Please try again.';
+        res.redirect('/auth/register');
+    }
+});
+
+// POST - Handle logout
+router.get('/logout', (req, res) => {
+    req.session.destroy(() => {
         res.redirect('/auth/login');
     });
 });

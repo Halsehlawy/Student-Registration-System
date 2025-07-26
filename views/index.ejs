@@ -1,19 +1,28 @@
 <%- include('partials/head', { title: 'Home - Student Registration System' }) %>
 
+<!-- Success Alert -->
+<% if (locals.user && locals.user.success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <%= locals.user.success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<% } %>
+
 <!-- Hero Section -->
-<div class="hero-section">
+<section class="hero-section">
     <div class="container">
         <div class="row justify-content-center text-center">
-            <div class="col-lg-8">
+            <div class="col-lg-10 col-xl-8">
                 <h1 class="hero-title">Student Registration System</h1>
                 <p class="hero-subtitle">Streamline your academic journey with our intuitive platform</p>
                 <% if (!locals.user) { %>
-                    <div class="hero-buttons">
+                    <div class="hero-buttons mb-4">
                         <a class="btn btn-primary btn-lg me-3" href="/auth/register">Get Started</a>
                         <a class="btn btn-outline-secondary btn-lg" href="/auth/login">Sign In</a>
                     </div>
                 <% } else { %>
-                    <div class="welcome-message">
+                    <div class="welcome-message mb-4">
                         <h3>Welcome back, <%= user.username %>! 👋</h3>
                         <p class="text-muted">Ready to continue your learning journey?</p>
                     </div>
@@ -21,98 +30,98 @@
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<% if (locals.user) { %>
-<!-- Dashboard Section -->
-<div class="dashboard-section">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <a href="/classes" class="feature-card-link">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="/assets/class.svg" alt="Manage Classes" width="24" height="24">
-                        </div>
-                        <h5>Manage Classes</h5>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <a href="/students" class="feature-card-link">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="/assets/student.svg" alt="Manage Students" width="24" height="24">
-                        </div>
-                        <h5>Manage Students</h5>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <a href="/instructors" class="feature-card-link">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="/assets/teacher.svg" alt="Manage Instructors" width="24" height="24">
-                        </div>
-                        <h5>Manage Instructors</h5>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <a href="/attendance" class="feature-card-link">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="/assets/attendance.svg" alt="Attendance" width="24" height="24">
-                        </div>
-                        <h5>Attendance</h5>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-<% } else { %>
 <!-- Features Section -->
-<div class="features-section">
+<% if (locals.user) { %>
+<section class="dashboard-section">
     <div class="container">
-        <div class="row justify-content-center text-center mb-5">
-            <div class="col-lg-6">
-                <h2 class="section-title">Everything you need to succeed</h2>
-                <p class="section-subtitle">Powerful tools designed for modern education</p>
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2>Quick Access</h2>
+                <p class="text-muted">Access your tools and resources</p>
             </div>
         </div>
-        <div class="row g-5">
-            <div class="col-md-4 text-center">
-                <div class="feature-item">
-                    <div class="feature-icon-minimal">🎓</div>
-                    <h5>Course Management</h5>
-                    <p>Easily enroll and manage your academic courses</p>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card" onclick="window.location.href='/students'" style="cursor: pointer;">
+                    <div class="feature-icon">
+                        <img src="/assets/student.svg" alt="Students" width="28" height="28">
+                    </div>
+                    <h5>Students</h5>
+                    <p>Manage student profiles, enrollment, and academic records</p>
                 </div>
             </div>
-            <div class="col-md-4 text-center">
-                <div class="feature-item">
-                    <div class="feature-icon-minimal">📊</div>
-                    <h5>Progress Tracking</h5>
-                    <p>Monitor your academic progress and attendance</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card" onclick="window.location.href='/instructors'" style="cursor: pointer;">
+                    <div class="feature-icon">
+                        <img src="/assets/teacher.svg" alt="Instructors" width="28" height="28">
+                    </div>
+                    <h5>Instructors</h5>
+                    <p>Access instructor information and teaching assignments</p>
                 </div>
             </div>
-            <div class="col-md-4 text-center">
-                <div class="feature-item">
-                    <div class="feature-icon-minimal">🔒</div>
-                    <h5>Secure Platform</h5>
-                    <p>Your data protected with enterprise-grade security</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card" onclick="window.location.href='/classes'" style="cursor: pointer;">
+                    <div class="feature-icon">
+                        <img src="/assets/class.svg" alt="Classes" width="28" height="28">
+                    </div>
+                    <h5>Classes</h5>
+                    <p>Browse available courses and class schedules</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card" onclick="window.location.href='/attendance'" style="cursor: pointer;">
+                    <div class="feature-icon">
+                        <img src="/assets/attendance.svg" alt="Attendance" width="28" height="28">
+                    </div>
+                    <h5>Attendance</h5>
+                    <p>Track and manage student attendance records</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+<% } else { %>
+<section class="features-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2>Why Choose Our Platform?</h2>
+                <p class="text-muted">Everything you need for efficient academic management</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="/assets/dashboard.svg" alt="Easy to Use" width="28" height="28">
+                    </div>
+                    <h5>Easy to Use</h5>
+                    <p>Intuitive interface designed for students, instructors, and administrators</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="/assets/security.svg" alt="Secure" width="28" height="28">
+                    </div>
+                    <h5>Secure & Reliable</h5>
+                    <p>Your data is protected with industry-standard security measures</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="/assets/mobile.svg" alt="Mobile Friendly" width="28" height="28">
+                    </div>
+                    <h5>Mobile Friendly</h5>
+                    <p>Access your information anywhere, anytime on any device</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <% } %>
 
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<%- include('partials/footer') %>
