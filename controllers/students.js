@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/student');
+const Class = require('../models/class'); // Add this import
 const { isAuthenticated, canModify } = require('../middleware/auth');
 
 // GET - Show all students (everyone can view)
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        const students = await Student.find({}).sort({ id: 1 });
+        const students = await Student.find({})
+            .sort({ id: 1 });
         res.render('management/students/index.ejs', { 
             students,
             userRole: req.session.user.role
@@ -41,11 +43,19 @@ router.post('/', isAuthenticated, canModify, async (req, res) => {
 router.get('/:id', isAuthenticated, async (req, res) => {
     try {
         const student = await Student.findById(req.params.id);
+        
         if (!student) {
             return res.redirect('/students');
         }
+        
+        // Get classes where this student is enrolled
+        const enrolledClasses = await Class.find({ students: student._id })
+            .populate('instructor', 'name')
+            .sort({ name: 1 });
+        
         res.render('management/students/show.ejs', { 
             student,
+            enrolledClasses,
             userRole: req.session.user.role
         });
     } catch (error) {
@@ -82,7 +92,17 @@ router.put('/:id', isAuthenticated, canModify, async (req, res) => {
 // DELETE - Delete student (ADMIN ONLY)
 router.delete('/:id', isAuthenticated, canModify, async (req, res) => {
     try {
-        await Student.findByIdAndDelete(req.params.id);
+        const studentId = req.params.id;
+        
+        // Remove student from all classes
+        await Class.updateMany(
+            { students: studentId },
+            { $pull: { students: studentId } }
+        );
+        
+        // Delete the student
+        await Student.findByIdAndDelete(studentId);
+        
         res.redirect('/students');
     } catch (error) {
         console.error(error);

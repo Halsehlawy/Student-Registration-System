@@ -20,9 +20,8 @@
                                 <tr>
                                     <th style="width: 80px;">ID</th>
                                     <th style="width: 200px;">Student</th>
-                                    <th style="width: 150px;">Email</th>
-                                    <th style="width: 120px;">Phone</th>
-                                    <th style="width: 200px;">Address</th>
+                                    <th style="width: 150px;">Phone</th>
+                                    <th style="width: 250px;">Address</th>
                                     <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
                                         <th style="width: 120px;">Actions</th>
                                     <% } %>
@@ -40,7 +39,6 @@
                                                 <strong><%= student.name %></strong>
                                             </div>
                                         </td>
-                                        <td><%= student.email || 'N/A' %></td>
                                         <td><%= student.parent_contact %></td>
                                         <td><%= student.address %></td>
                                         <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>

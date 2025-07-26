@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt'); // Add at top
+const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const User = require('./models/user');
@@ -11,259 +13,112 @@ mongoose.connect(process.env.MONGODB_URI);
 
 const seedData = async () => {
     try {
+        // Read data from JSON file
+        console.log('📖 Reading data from JSON file...');
+        const dataPath = path.join(__dirname, 'data', 'seedRecords.json');
+        const rawData = fs.readFileSync(dataPath, 'utf8');
+        const data = JSON.parse(rawData);
+
         // Clear existing data
-        console.log('Clearing existing data...');
+        console.log('🗑️  Clearing existing data...');
         await User.deleteMany({});
         await Student.deleteMany({});
         await Instructor.deleteMany({});
         await Class.deleteMany({});
 
-        // Create users first
-        console.log('Creating users...');
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash('password123', saltRounds);
-
         // Create users with hashed passwords
-        const adminUser = await User.create({
-            username: 'admin',
-            password: hashedPassword,
-            role: 'admin'
-        });
+        console.log('👤 Creating users...');
+        const saltRounds = 10;
+        const createdUsers = {};
 
-        const instructorUser1 = await User.create({
-            username: 'rthompson',
-            password: hashedPassword,
-            role: 'instructor'
-        });
-
-        const instructorUser2 = await User.create({
-            username: 'lrodriguez',
-            password: hashedPassword,
-            role: 'instructor'
-        });
-
-        const instructorUser3 = await User.create({
-            username: 'jsmith',
-            password: hashedPassword,
-            role: 'instructor'
-        });
-
-        const instructorUser4 = await User.create({
-            username: 'mwilson',
-            password: hashedPassword,
-            role: 'instructor'
-        });
-
-        const instructorUser5 = await User.create({
-            username: 'djohnson',
-            password: hashedPassword,
-            role: 'instructor'
-        });
+        for (const userData of data.users) {
+            const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+            const user = await User.create({
+                username: userData.username,
+                password: hashedPassword,
+                role: userData.role
+            });
+            createdUsers[userData.username] = user;
+        }
 
         // Create instructors and link them to users
-        console.log('Creating instructors...');
-        const instructors = await Instructor.create([
-            {
-                id: 2001,
-                name: 'Dr. Robert Thompson',
-                image: 'https://randomuser.me/api/portraits/men/20.jpg',
-                contact: '+1-555-2001',
-                address: '100 University Drive, Springfield, IL 62710',
-                user: instructorUser1._id
-            },
-            {
-                id: 2002,
-                name: 'Prof. Linda Rodriguez',
-                image: 'https://randomuser.me/api/portraits/women/21.jpg',
-                contact: '+1-555-2002',
-                address: '200 College Avenue, Springfield, IL 62711',
-                user: instructorUser2._id
-            },
-            {
-                id: 2003,
-                name: 'Prof. Jennifer Smith',
-                image: 'https://randomuser.me/api/portraits/women/22.jpg',
-                contact: '+1-555-2003',
-                address: '300 Academic Boulevard, Springfield, IL 62712',
-                user: instructorUser3._id
-            },
-            {
-                id: 2004,
-                name: 'Dr. Michael Wilson',
-                image: 'https://randomuser.me/api/portraits/men/23.jpg',
-                contact: '+1-555-2004',
-                address: '400 Education Street, Springfield, IL 62713',
-                user: instructorUser4._id
-            },
-            {
-                id: 2005,
-                name: 'Prof. Diana Johnson',
-                image: 'https://randomuser.me/api/portraits/women/24.jpg',
-                contact: '+1-555-2005',
-                address: '500 Learning Lane, Springfield, IL 62714',
-                user: instructorUser5._id
-            }
-        ]);
+        console.log('👨‍🏫 Creating instructors...');
+        const createdInstructors = {};
 
-        // Link users back to instructors
-        await User.findByIdAndUpdate(instructorUser1._id, { 
-            linkedInstructor: instructors[0]._id 
-        });
-        await User.findByIdAndUpdate(instructorUser2._id, { 
-            linkedInstructor: instructors[1]._id 
-        });
-        await User.findByIdAndUpdate(instructorUser3._id, { 
-            linkedInstructor: instructors[2]._id 
-        });
-        await User.findByIdAndUpdate(instructorUser4._id, { 
-            linkedInstructor: instructors[3]._id 
-        });
-        await User.findByIdAndUpdate(instructorUser5._id, { 
-            linkedInstructor: instructors[4]._id 
-        });
+        for (const instructorData of data.instructors) {
+            const user = createdUsers[instructorData.username];
+            const instructor = await Instructor.create({
+                id: instructorData.id,
+                name: instructorData.name,
+                image: instructorData.image,
+                contact: instructorData.contact,
+                address: instructorData.address,
+                user: user._id
+            });
+            
+            // Link user back to instructor
+            await User.findByIdAndUpdate(user._id, { 
+                linkedInstructor: instructor._id 
+            });
+            
+            createdInstructors[instructorData.id] = instructor;
+        }
 
-        // Create students (existing code)
-        console.log('Creating students...');
-        const students = await Student.create([
-            {
-                id: 1001,
-                name: 'John Smith',
-                image: 'https://randomuser.me/api/portraits/men/1.jpg',
-                parent_contact: '+1-555-0101',
-                address: '123 Oak Street, Springfield, IL 62701'
-            },
-            {
-                id: 1002,
-                name: 'Sarah Johnson',
-                image: 'https://randomuser.me/api/portraits/women/2.jpg',
-                parent_contact: '+1-555-0102',
-                address: '456 Pine Avenue, Springfield, IL 62702'
-            },
-            {
-                id: 1003,
-                name: 'Michael Brown',
-                image: 'https://randomuser.me/api/portraits/men/3.jpg',
-                parent_contact: '+1-555-0103',
-                address: '789 Elm Drive, Springfield, IL 62703'
-            },
-            {
-                id: 1004,
-                name: 'Emily Davis',
-                image: 'https://randomuser.me/api/portraits/women/4.jpg',
-                parent_contact: '+1-555-0104',
-                address: '321 Maple Lane, Springfield, IL 62704'
-            },
-            {
-                id: 1005,
-                name: 'David Wilson',
-                image: 'https://randomuser.me/api/portraits/men/5.jpg',
-                parent_contact: '+1-555-0105',
-                address: '654 Cedar Street, Springfield, IL 62705'
-            },
-            {
-                id: 1006,
-                name: 'Jessica Martinez',
-                image: 'https://randomuser.me/api/portraits/women/6.jpg',
-                parent_contact: '+1-555-0106',
-                address: '987 Birch Road, Springfield, IL 62706'
-            },
-            {
-                id: 1007,
-                name: 'Christopher Taylor',
-                image: 'https://randomuser.me/api/portraits/men/7.jpg',
-                parent_contact: '+1-555-0107',
-                address: '147 Walnut Circle, Springfield, IL 62707'
-            },
-            {
-                id: 1008,
-                name: 'Amanda Anderson',
-                image: 'https://randomuser.me/api/portraits/women/8.jpg',
-                parent_contact: '+1-555-0108',
-                address: '258 Hickory Place, Springfield, IL 62708'
-            }
-        ]);
+        // Create students
+        console.log('👨‍🎓 Creating students...');
+        const createdStudents = {};
 
-        // Sample Classes
-        console.log('Creating classes...');
-        const classes = await Class.create([
-            {
-                id: 3001,
-                name: 'Introduction to Computer Science',
-                subject: 'Computer Science',
-                schedule: 'Mon, Wed, Fri - 9:00 AM',
-                instructor: instructors[0]._id, // Dr. Robert Thompson
-                students: [students[0]._id, students[1]._id, students[2]._id],
-                room: 'CS-101',
-                capacity: 25,
-                description: 'An introductory course covering basic programming concepts and computational thinking.'
-            },
-            {
-                id: 3002,
-                name: 'Advanced Mathematics',
-                subject: 'Mathematics',
-                schedule: 'Tue, Thu - 10:30 AM',
-                instructor: instructors[1]._id, // Prof. Linda Rodriguez
-                students: [students[1]._id, students[3]._id, students[4]._id, students[5]._id],
-                room: 'MATH-201',
-                capacity: 20,
-                description: 'Advanced mathematical concepts including calculus and linear algebra.'
-            },
-            {
-                id: 3003,
-                name: 'Physics Laboratory',
-                subject: 'Physics',
-                schedule: 'Wed - 2:00 PM',
-                instructor: instructors[0]._id, // Dr. Robert Thompson (assign to existing instructor)
-                students: [students[2]._id, students[4]._id, students[6]._id],
-                room: 'PHY-LAB-1',
-                capacity: 15,
-                description: 'Hands-on laboratory experiments in mechanics and thermodynamics.'
-            },
-            {
-                id: 3004,
-                name: 'English Literature',
-                subject: 'English',
-                schedule: 'Mon, Wed - 11:00 AM',
-                instructor: instructors[1]._id, // Prof. Linda Rodriguez (assign to existing instructor)
-                students: [students[0]._id, students[3]._id, students[5]._id, students[7]._id],
-                room: 'ENG-301',
-                capacity: 30,
-                description: 'Study of classic and contemporary literature with focus on critical analysis.'
-            },
-            {
-                id: 3005,
-                name: 'Data Structures & Algorithms',
-                subject: 'Computer Science',
-                schedule: 'Tue, Thu - 1:00 PM',
-                instructor: instructors[0]._id, // Dr. Robert Thompson
-                students: [students[1]._id, students[2]._id, students[6]._id, students[7]._id],
-                room: 'CS-201',
-                capacity: 22,
-                description: 'Advanced programming course focusing on efficient data structures and algorithms.'
-            },
-            {
-                id: 3006,
-                name: 'World History',
-                subject: 'History',
-                schedule: 'Mon, Fri - 3:00 PM',
-                instructor: instructors[1]._id, // Prof. Linda Rodriguez
-                students: [students[0]._id, students[4]._id, students[5]._id],
-                room: 'HIST-101',
-                capacity: 35,
-                description: 'Comprehensive overview of world history from ancient civilizations to modern times.'
-            }
-        ]);
+        for (const studentData of data.students) {
+            const student = await Student.create({
+                id: studentData.id,
+                name: studentData.name,
+                image: studentData.image,
+                parent_contact: studentData.parent_contact,
+                address: studentData.address
+            });
+            createdStudents[studentData.id] = student;
+        }
 
-        console.log('✅ Database seeded successfully!');
-        console.log(`Created users: admin, rthompson, lrodriguez, jsmith, mwilson, djohnson`);
-        console.log(`Created ${students.length} students, ${instructors.length} instructors with user accounts`);
-        console.log(`Created ${classes.length} classes`);
-        console.log('Instructor login credentials:');
-        console.log('- Username: rthompson, Password: password123');
-        console.log('- Username: lrodriguez, Password: password123');
-        console.log('- Username: jsmith, Password: password123');
-        console.log('- Username: mwilson, Password: password123');
-        console.log('- Username: djohnson, Password: password123');
+        // Create classes and establish relationships
+        console.log('📚 Creating classes...');
+        const createdClasses = [];
+
+        for (const classData of data.classes) {
+            // Find instructor by ID
+            const instructor = createdInstructors[classData.instructor_id];
+            
+            // Find students by IDs
+            const students = classData.student_ids.map(id => createdStudents[id]._id);
+
+            const classObj = await Class.create({
+                id: classData.id,
+                name: classData.name,
+                subject: classData.subject,
+                schedule: classData.schedule,
+                instructor: instructor._id,
+                students: students,
+                room: classData.room,
+                capacity: classData.capacity,
+                description: classData.description
+            });
+
+            createdClasses.push(classObj);
+        }
+
+        // Summary
+        console.log('\n✅ Database seeded successfully!');
+        console.log('📊 Summary:');
+        console.log(`   👤 Users: ${data.users.length}`);
+        console.log(`   👨‍🎓 Students: ${data.students.length}`);
+        console.log(`   👨‍🏫 Instructors: ${data.instructors.length}`);
+        console.log(`   📚 Classes: ${data.classes.length}`);
+        
+        console.log('\n🔑 Login Credentials:');
+        console.log('   Admin: admin / password123');
+        console.log('   Instructors:');
+        data.instructors.forEach(instructor => {
+            console.log(`   - ${instructor.username} / password123`);
+        });
         
     } catch (error) {
         console.error('❌ Error seeding database:', error);

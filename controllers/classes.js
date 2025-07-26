@@ -40,8 +40,23 @@ router.get('/new', isAuthenticated, canModify, async (req, res) => {
 // POST - Create new class (ADMIN ONLY)
 router.post('/', isAuthenticated, canModify, async (req, res) => {
     try {
-        const classData = new Class(req.body);
-        await classData.save();
+        // Create the class
+        const classData = {
+            ...req.body,
+            students: req.body.students || []
+        };
+        
+        const newClass = new Class(classData);
+        await newClass.save();
+        
+        // Add this class to all enrolled students
+        if (classData.students.length > 0) {
+            await Student.updateMany(
+                { _id: { $in: classData.students } },
+                { $addToSet: { classes: newClass._id } }
+            );
+        }
+        
         res.redirect('/classes');
     } catch (error) {
         console.error(error);
@@ -102,7 +117,7 @@ router.put('/:id', isAuthenticated, canModify, async (req, res) => {
     }
 });
 
-// DELETE - Delete class (ADMIN ONLY)
+// DELETE - Delete class (ADMIN ONLY)  
 router.delete('/:id', isAuthenticated, canModify, async (req, res) => {
     try {
         await Class.findByIdAndDelete(req.params.id);

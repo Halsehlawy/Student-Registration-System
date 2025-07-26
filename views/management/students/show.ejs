@@ -59,36 +59,83 @@
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
-                                <strong>Created:</strong>
+                                <strong>Enrolled Classes:</strong>
                             </div>
                             <div class="col-sm-9">
-                                <%= new Date(student.createdAt).toLocaleDateString() %>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <strong>Last Updated:</strong>
-                            </div>
-                            <div class="col-sm-9">
-                                <%= new Date(student.updatedAt).toLocaleDateString() %>
+                                <% if (enrolledClasses && enrolledClasses.length > 0) { %>
+                                    <span class="badge bg-success me-1"><%= enrolledClasses.length %> classes</span>
+                                <% } else { %>
+                                    <span class="text-muted">No classes enrolled</span>
+                                <% } %>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="mt-4 d-flex justify-content-end">
-                    <!-- Hide delete button from instructors -->
-                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
-                        <form method="POST" action="/students/<%= student._id %>?_method=DELETE" 
-                              class="d-inline" onsubmit="return confirm('Are you sure you want to delete this student?')">
-                            <button type="submit" class="btn btn-danger">Delete Student</button>
-                        </form>
-                    <% } %>
-                </div>
             </div>
         </div>
+
+        <!-- Classes Table -->
+        <% if (enrolledClasses && enrolledClasses.length > 0) { %>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book me-2"></i>Enrolled Classes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 80px;">ID</th>
+                                    <th style="width: 250px;">Class Name</th>
+                                    <th style="width: 120px;">Subject</th>
+                                    <th style="width: 150px;">Schedule</th>
+                                    <th style="width: 150px;">Instructor</th>
+                                    <th style="width: 100px;">Room</th>
+                                    <th style="width: 100px;">Enrollment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% enrolledClasses.forEach(classItem => { %>
+                                    <tr class="clickable-row" data-href="/classes/<%= classItem._id %>" style="cursor: pointer;">
+                                        <td><%= classItem.id %></td>
+                                        <td><strong><%= classItem.name %></strong></td>
+                                        <td><%= classItem.subject %></td>
+                                        <td><small><%= classItem.schedule %></small></td>
+                                        <td><%= classItem.instructor ? classItem.instructor.name : 'Not assigned' %></td>
+                                        <td><%= classItem.room %></td>
+                                        <td>
+                                            <span class="badge bg-info">
+                                                <%= classItem.students ? classItem.students.length : 0 %>/<%= classItem.capacity %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="card mt-4">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No Classes Enrolled</h5>
+                    <p class="text-muted">This student is not currently enrolled in any classes.</p>
+                </div>
+            </div>
+        <% } %>
     </div>
 </div>
+
+<script>
+    // Make table rows clickable
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+    });
+</script>
 
 <%- include('../../partials/footer') %>

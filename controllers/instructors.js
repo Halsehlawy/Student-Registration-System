@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Instructor = require('../models/instructor');
+const Class = require('../models/class'); // Assuming Class model is in models/class.js
 const { isAuthenticated, canModify } = require('../middleware/auth');
 
 // GET - Show all instructors (everyone can view)
@@ -44,11 +45,19 @@ router.get('/:id', isAuthenticated, async (req, res) => {
     try {
         const instructor = await Instructor.findById(req.params.id)
             .populate('user', 'username role');
+        
         if (!instructor) {
             return res.redirect('/instructors');
         }
+        
+        // Get classes taught by this instructor
+        const teachingClasses = await Class.find({ instructor: instructor._id })
+            .populate('students', 'name')
+            .sort({ name: 1 });
+        
         res.render('management/instructors/show.ejs', { 
             instructor,
+            teachingClasses,
             userRole: req.session.user.role
         });
     } catch (error) {

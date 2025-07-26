@@ -1,0 +1,404 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "password123",
+      "role": "admin"
+    },
+    {
+      "username": "rthompson",
+      "password": "password123",
+      "role": "instructor"
+    },
+    {
+      "username": "lrodriguez",
+      "password": "password123",
+      "role": "instructor"
+    },
+    {
+      "username": "jsmith",
+      "password": "password123",
+      "role": "instructor"
+    },
+    {
+      "username": "mwilson",
+      "password": "password123",
+      "role": "instructor"
+    },
+    {
+      "username": "djohnson",
+      "password": "password123",
+      "role": "instructor"
+    },
+    {
+      "username": "kbrown",
+      "password": "password123",
+      "role": "instructor"
+    },
+    {
+      "username": "alee",
+      "password": "password123",
+      "role": "instructor"
+    },
+    {
+      "username": "sgarcia",
+      "password": "password123",
+      "role": "instructor"
+    },
+    {
+      "username": "mwhite",
+      "password": "password123",
+      "role": "instructor"
+    }
+  ],
+  "instructors": [
+    {
+      "id": 2001,
+      "name": "Dr. Robert Thompson",
+      "image": "https://randomuser.me/api/portraits/men/20.jpg",
+      "contact": "+1-555-2001",
+      "address": "100 University Drive, Springfield, IL 62710",
+      "username": "rthompson"
+    },
+    {
+      "id": 2002,
+      "name": "Prof. Linda Rodriguez",
+      "image": "https://randomuser.me/api/portraits/women/21.jpg",
+      "contact": "+1-555-2002",
+      "address": "200 College Avenue, Springfield, IL 62711",
+      "username": "lrodriguez"
+    },
+    {
+      "id": 2003,
+      "name": "Prof. Jennifer Smith",
+      "image": "https://randomuser.me/api/portraits/women/22.jpg",
+      "contact": "+1-555-2003",
+      "address": "300 Academic Boulevard, Springfield, IL 62712",
+      "username": "jsmith"
+    },
+    {
+      "id": 2004,
+      "name": "Dr. Michael Wilson",
+      "image": "https://randomuser.me/api/portraits/men/23.jpg",
+      "contact": "+1-555-2004",
+      "address": "400 Education Street, Springfield, IL 62713",
+      "username": "mwilson"
+    },
+    {
+      "id": 2005,
+      "name": "Prof. Diana Johnson",
+      "image": "https://randomuser.me/api/portraits/women/24.jpg",
+      "contact": "+1-555-2005",
+      "address": "500 Learning Lane, Springfield, IL 62714",
+      "username": "djohnson"
+    },
+    {
+      "id": 2006,
+      "name": "Dr. Kevin Brown",
+      "image": "https://randomuser.me/api/portraits/men/25.jpg",
+      "contact": "+1-555-2006",
+      "address": "600 Science Court, Springfield, IL 62715",
+      "username": "kbrown"
+    },
+    {
+      "id": 2007,
+      "name": "Prof. Anna Lee",
+      "image": "https://randomuser.me/api/portraits/women/26.jpg",
+      "contact": "+1-555-2007",
+      "address": "700 Arts Way, Springfield, IL 62716",
+      "username": "alee"
+    },
+    {
+      "id": 2008,
+      "name": "Dr. Sofia Garcia",
+      "image": "https://randomuser.me/api/portraits/women/27.jpg",
+      "contact": "+1-555-2008",
+      "address": "800 Research Road, Springfield, IL 62717",
+      "username": "sgarcia"
+    },
+    {
+      "id": 2009,
+      "name": "Prof. Mark White",
+      "image": "https://randomuser.me/api/portraits/men/28.jpg",
+      "contact": "+1-555-2009",
+      "address": "900 Technology Trail, Springfield, IL 62718",
+      "username": "mwhite"
+    }
+  ],
+  "students": [
+    {
+      "id": 1001,
+      "name": "John Smith",
+      "image": "https://randomuser.me/api/portraits/men/1.jpg",
+      "parent_contact": "+1-555-0101",
+      "address": "123 Oak Street, Springfield, IL 62701"
+    },
+    {
+      "id": 1002,
+      "name": "Sarah Johnson",
+      "image": "https://randomuser.me/api/portraits/women/2.jpg",
+      "parent_contact": "+1-555-0102",
+      "address": "456 Pine Avenue, Springfield, IL 62702"
+    },
+    {
+      "id": 1003,
+      "name": "Michael Brown",
+      "image": "https://randomuser.me/api/portraits/men/3.jpg",
+      "parent_contact": "+1-555-0103",
+      "address": "789 Elm Drive, Springfield, IL 62703"
+    },
+    {
+      "id": 1004,
+      "name": "Emily Davis",
+      "image": "https://randomuser.me/api/portraits/women/4.jpg",
+      "parent_contact": "+1-555-0104",
+      "address": "321 Maple Lane, Springfield, IL 62704"
+    },
+    {
+      "id": 1005,
+      "name": "David Wilson",
+      "image": "https://randomuser.me/api/portraits/men/5.jpg",
+      "parent_contact": "+1-555-0105",
+      "address": "654 Cedar Street, Springfield, IL 62705"
+    },
+    {
+      "id": 1006,
+      "name": "Jessica Martinez",
+      "image": "https://randomuser.me/api/portraits/women/6.jpg",
+      "parent_contact": "+1-555-0106",
+      "address": "987 Birch Road, Springfield, IL 62706"
+    },
+    {
+      "id": 1007,
+      "name": "Christopher Taylor",
+      "image": "https://randomuser.me/api/portraits/men/7.jpg",
+      "parent_contact": "+1-555-0107",
+      "address": "147 Walnut Circle, Springfield, IL 62707"
+    },
+    {
+      "id": 1008,
+      "name": "Amanda Anderson",
+      "image": "https://randomuser.me/api/portraits/women/8.jpg",
+      "parent_contact": "+1-555-0108",
+      "address": "258 Hickory Place, Springfield, IL 62708"
+    },
+    {
+      "id": 1009,
+      "name": "Ryan Clark",
+      "image": "https://randomuser.me/api/portraits/men/9.jpg",
+      "parent_contact": "+1-555-0109",
+      "address": "369 Spruce Street, Springfield, IL 62709"
+    },
+    {
+      "id": 1010,
+      "name": "Ashley Lewis",
+      "image": "https://randomuser.me/api/portraits/women/10.jpg",
+      "parent_contact": "+1-555-0110",
+      "address": "741 Fir Avenue, Springfield, IL 62710"
+    },
+    {
+      "id": 1011,
+      "name": "Kevin Walker",
+      "image": "https://randomuser.me/api/portraits/men/11.jpg",
+      "parent_contact": "+1-555-0111",
+      "address": "852 Poplar Drive, Springfield, IL 62711"
+    },
+    {
+      "id": 1012,
+      "name": "Nicole Hall",
+      "image": "https://randomuser.me/api/portraits/women/12.jpg",
+      "parent_contact": "+1-555-0112",
+      "address": "963 Willow Lane, Springfield, IL 62712"
+    },
+    {
+      "id": 1013,
+      "name": "Brandon Young",
+      "image": "https://randomuser.me/api/portraits/men/13.jpg",
+      "parent_contact": "+1-555-0113",
+      "address": "159 Ash Street, Springfield, IL 62713"
+    },
+    {
+      "id": 1014,
+      "name": "Rachel King",
+      "image": "https://randomuser.me/api/portraits/women/14.jpg",
+      "parent_contact": "+1-555-0114",
+      "address": "357 Cypress Road, Springfield, IL 62714"
+    },
+    {
+      "id": 1015,
+      "name": "Tyler Wright",
+      "image": "https://randomuser.me/api/portraits/men/15.jpg",
+      "parent_contact": "+1-555-0115",
+      "address": "468 Redwood Circle, Springfield, IL 62715"
+    },
+    {
+      "id": 1016,
+      "name": "Megan Lopez",
+      "image": "https://randomuser.me/api/portraits/women/16.jpg",
+      "parent_contact": "+1-555-0116",
+      "address": "579 Sequoia Place, Springfield, IL 62716"
+    },
+    {
+      "id": 1017,
+      "name": "Jordan Hill",
+      "image": "https://randomuser.me/api/portraits/men/17.jpg",
+      "parent_contact": "+1-555-0117",
+      "address": "680 Magnolia Street, Springfield, IL 62717"
+    },
+    {
+      "id": 1018,
+      "name": "Samantha Scott",
+      "image": "https://randomuser.me/api/portraits/women/18.jpg",
+      "parent_contact": "+1-555-0118",
+      "address": "791 Dogwood Avenue, Springfield, IL 62718"
+    },
+    {
+      "id": 1019,
+      "name": "Justin Green",
+      "image": "https://randomuser.me/api/portraits/men/19.jpg",
+      "parent_contact": "+1-555-0119",
+      "address": "802 Sycamore Drive, Springfield, IL 62719"
+    },
+    {
+      "id": 1020,
+      "name": "Lauren Adams",
+      "image": "https://randomuser.me/api/portraits/women/20.jpg",
+      "parent_contact": "+1-555-0120",
+      "address": "913 Cottonwood Lane, Springfield, IL 62720"
+    }
+  ],
+  "classes": [
+    {
+      "id": 3001,
+      "name": "Introduction to Computer Science",
+      "subject": "Computer Science",
+      "schedule": "Mon, Wed, Fri - 9:00 AM",
+      "instructor_id": 2001,
+      "student_ids": [1001, 1002, 1003, 1009, 1010],
+      "room": "CS-101",
+      "capacity": 25,
+      "description": "An introductory course covering basic programming concepts and computational thinking."
+    },
+    {
+      "id": 3002,
+      "name": "Advanced Mathematics",
+      "subject": "Mathematics",
+      "schedule": "Tue, Thu - 10:30 AM",
+      "instructor_id": 2002,
+      "student_ids": [1001, 1004, 1005, 1006, 1011, 1012],
+      "room": "MATH-201",
+      "capacity": 20,
+      "description": "Advanced mathematical concepts including calculus and linear algebra."
+    },
+    {
+      "id": 3003,
+      "name": "Physics Laboratory",
+      "subject": "Physics",
+      "schedule": "Wed - 2:00 PM",
+      "instructor_id": 2006,
+      "student_ids": [1003, 1005, 1007, 1013, 1014],
+      "room": "PHY-LAB-1",
+      "capacity": 15,
+      "description": "Hands-on laboratory experiments in mechanics and thermodynamics."
+    },
+    {
+      "id": 3004,
+      "name": "English Literature",
+      "subject": "English",
+      "schedule": "Mon, Wed - 11:00 AM",
+      "instructor_id": 2007,
+      "student_ids": [1002, 1004, 1006, 1008, 1015, 1016],
+      "room": "ENG-301",
+      "capacity": 30,
+      "description": "Study of classic and contemporary literature with focus on critical analysis."
+    },
+    {
+      "id": 3005,
+      "name": "Data Structures & Algorithms",
+      "subject": "Computer Science",
+      "schedule": "Tue, Thu - 1:00 PM",
+      "instructor_id": 2001,
+      "student_ids": [1002, 1003, 1007, 1008, 1017, 1018],
+      "room": "CS-201",
+      "capacity": 22,
+      "description": "Advanced programming course focusing on efficient data structures and algorithms."
+    },
+    {
+      "id": 3006,
+      "name": "World History",
+      "subject": "History",
+      "schedule": "Mon, Fri - 3:00 PM",
+      "instructor_id": 2003,
+      "student_ids": [1001, 1005, 1006, 1019, 1020],
+      "room": "HIST-101",
+      "capacity": 35,
+      "description": "Comprehensive overview of world history from ancient civilizations to modern times."
+    },
+    {
+      "id": 3007,
+      "name": "Chemistry Fundamentals",
+      "subject": "Chemistry",
+      "schedule": "Mon, Wed, Fri - 2:00 PM",
+      "instructor_id": 2008,
+      "student_ids": [1009, 1010, 1011, 1012, 1013],
+      "room": "CHEM-101",
+      "capacity": 20,
+      "description": "Basic principles of chemistry including atomic structure and chemical bonding."
+    },
+    {
+      "id": 3008,
+      "name": "Web Development",
+      "subject": "Computer Science",
+      "schedule": "Tue, Thu - 3:30 PM",
+      "instructor_id": 2009,
+      "student_ids": [1014, 1015, 1016, 1017, 1018, 1019],
+      "room": "CS-301",
+      "capacity": 18,
+      "description": "Modern web development using HTML, CSS, JavaScript, and popular frameworks."
+    },
+    {
+      "id": 3009,
+      "name": "Statistics",
+      "subject": "Mathematics",
+      "schedule": "Mon, Wed - 1:00 PM",
+      "instructor_id": 2004,
+      "student_ids": [1004, 1007, 1008, 1020],
+      "room": "MATH-301",
+      "capacity": 25,
+      "description": "Statistical methods and data analysis techniques for various applications."
+    },
+    {
+      "id": 3010,
+      "name": "Art History",
+      "subject": "Art",
+      "schedule": "Tue, Thu - 9:00 AM",
+      "instructor_id": 2007,
+      "student_ids": [1009, 1011, 1013, 1015, 1017, 1019],
+      "room": "ART-201",
+      "capacity": 30,
+      "description": "Survey of art movements from ancient times to contemporary period."
+    },
+    {
+      "id": 3011,
+      "name": "Database Systems",
+      "subject": "Computer Science",
+      "schedule": "Mon, Wed - 4:00 PM",
+      "instructor_id": 2001,
+      "student_ids": [1010, 1012, 1014, 1016, 1018, 1020],
+      "room": "CS-401",
+      "capacity": 20,
+      "description": "Design and implementation of database systems including SQL and NoSQL databases."
+    },
+    {
+      "id": 3012,
+      "name": "Business Ethics",
+      "subject": "Business",
+      "schedule": "Fri - 10:00 AM",
+      "instructor_id": 2005,
+      "student_ids": [1001, 1003, 1005, 1007, 1009, 1011, 1013, 1015],
+      "room": "BUS-101",
+      "capacity": 40,
+      "description": "Ethical decision-making in business environments and corporate responsibility."
+    }
+  ]
+}
