@@ -1,12 +1,14 @@
-<%- include('../../partials/head', { title: 'Manage Students' }) %>
+<%- include('../../partials/head', { title: 'Students' }) %>
 
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Manage Students</h2>
-            <a href="/students/new" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Add New Student
-            </a>
+            <h2>Students</h2>
+            <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                <a href="/students/new" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New Student
+                </a>
+            <% } %>
         </div>
         
         <div class="card">
@@ -21,38 +23,34 @@
                                     <th style="width: 150px;">Email</th>
                                     <th style="width: 120px;">Phone</th>
                                     <th style="width: 200px;">Address</th>
-                                    <th style="width: 120px;">Actions</th>
+                                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                        <th style="width: 120px;">Actions</th>
+                                    <% } %>
                                 </tr>
                             </thead>
                             <tbody>
                                 <% students.forEach(student => { %>
-                                    <tr>
+                                    <tr class="clickable-row" data-href="/students/<%= student._id %>" style="cursor: pointer;">
                                         <td><%= student.id %></td>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <img src="<%= student.image %>" alt="<%= student.name %>" 
-                                                     class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
-                                                <div>
-                                                    <strong><%= student.name %></strong>
-                                                </div>
+                                                     class="rounded-circle me-3" width="40" height="40"
+                                                     style="object-fit: cover;">
+                                                <strong><%= student.name %></strong>
                                             </div>
                                         </td>
                                         <td><%= student.email || 'N/A' %></td>
-                                        <td><%= student.phone || 'N/A' %></td>
-                                        <td><%= student.address || 'N/A' %></td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" 
-                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Actions
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a class="dropdown-item" href="/students/<%= student._id %>">
-                                                            <i class="fas fa-eye me-2"></i>View
-                                                        </a>
-                                                    </li>
-                                                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                        <td><%= student.parent_contact %></td>
+                                        <td><%= student.address %></td>
+                                        <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                            <td onclick="event.stopPropagation();">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" 
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Actions
+                                                    </button>
+                                                    <ul class="dropdown-menu">
                                                         <li>
                                                             <a class="dropdown-item" href="/students/<%= student._id %>/edit">
                                                                 <i class="fas fa-edit me-2"></i>Edit
@@ -67,10 +65,10 @@
                                                                 </button>
                                                             </form>
                                                         </li>
-                                                    <% } %>
-                                                </ul>
-                                            </div>
-                                        </td>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }) %>
                             </tbody>
@@ -78,12 +76,26 @@
                     </div>
                 <% } else { %>
                     <div class="text-center py-4">
-                        <p class="text-muted">No students found. Add your first student to get started.</p>
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                            <p class="text-muted">No students found. <a href="/students/new">Add your first student</a> to get started.</p>
+                        <% } else { %>
+                            <p class="text-muted">No students found.</p>
+                        <% } %>
                     </div>
                 <% } %>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Make table rows clickable
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+    });
+</script>
 
 <%- include('../../partials/footer') %>

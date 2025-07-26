@@ -3,24 +3,15 @@
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2>Instructors Management</h2>
-                <p class="text-muted mb-0">Manage instructor profiles and accounts</p>
-            </div>
-            <!-- Only show Add New button for admins -->
+            <h2>Instructors</h2>
             <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
-                <div>
-                    <a href="/instructors/new" class="btn btn-primary">
-                        <i class="fas fa-plus me-2"></i>Add New Instructor
-                    </a>
-                </div>
+                <a href="/instructors/new" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New Instructor
+                </a>
             <% } %>
         </div>
         
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">All Instructors</h5>
-            </div>
             <div class="card-body">
                 <% if (instructors && instructors.length > 0) { %>
                     <div class="table-responsive">
@@ -31,49 +22,33 @@
                                     <th style="width: 200px;">Instructor</th>
                                     <th style="width: 150px;">Contact</th>
                                     <th style="width: 200px;">Address</th>
-                                    <th style="width: 120px;">User Account</th>
-                                    <th style="width: 120px;">Actions</th>
+                                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                        <th style="width: 120px;">Actions</th>
+                                    <% } %>
                                 </tr>
                             </thead>
                             <tbody>
                                 <% instructors.forEach(instructor => { %>
-                                    <tr>
+                                    <tr class="clickable-row" data-href="/instructors/<%= instructor._id %>" style="cursor: pointer;">
                                         <td><%= instructor.id %></td>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <img src="<%= instructor.image %>" alt="<%= instructor.name %>" 
-                                                     class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
-                                                <div>
-                                                    <strong><%= instructor.name %></strong>
-                                                </div>
+                                                     class="rounded-circle me-3" width="40" height="40"
+                                                     style="object-fit: cover;">
+                                                <strong><%= instructor.name %></strong>
                                             </div>
                                         </td>
-                                        <td><%= instructor.contact || 'N/A' %></td>
-                                        <td><%= instructor.address || 'N/A' %></td>
-                                        <td>
-                                            <% if (instructor.user) { %>
-                                                <span class="badge bg-success">
-                                                    <i class="fas fa-user-check me-1"></i><%= instructor.user.username %>
-                                                </span>
-                                            <% } else { %>
-                                                <span class="badge bg-secondary">
-                                                    <i class="fas fa-user-times me-1"></i>No Account
-                                                </span>
-                                            <% } %>
-                                        </td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" 
-                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Actions
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a class="dropdown-item" href="/instructors/<%= instructor._id %>">
-                                                            <i class="fas fa-eye me-2"></i>View
-                                                        </a>
-                                                    </li>
-                                                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                        <td><%= instructor.contact %></td>
+                                        <td><%= instructor.address %></td>
+                                        <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                            <td onclick="event.stopPropagation();">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" 
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Actions
+                                                    </button>
+                                                    <ul class="dropdown-menu">
                                                         <li>
                                                             <a class="dropdown-item" href="/instructors/<%= instructor._id %>/edit">
                                                                 <i class="fas fa-edit me-2"></i>Edit
@@ -88,10 +63,10 @@
                                                                 </button>
                                                             </form>
                                                         </li>
-                                                    <% } %>
-                                                </ul>
-                                            </div>
-                                        </td>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }) %>
                             </tbody>
@@ -111,5 +86,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Make table rows clickable
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+    });
+</script>
 
 <%- include('../../partials/footer') %>

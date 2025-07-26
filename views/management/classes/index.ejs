@@ -1,19 +1,13 @@
-<%- include('../../partials/head', { title: 'Manage Classes' }) %>
+<%- include('../../partials/head', { title: 'Classes' }) %>
 
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2>Manage Classes</h2>
-                <p class="text-muted mb-0">View and manage class schedules</p>
-            </div>
-            <!-- Only show Add New button for admins -->
+            <h2>Classes</h2>
             <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
-                <div>
-                    <a href="/classes/new" class="btn btn-primary">
-                        <i class="fas fa-plus me-2"></i>Add New Class
-                    </a>
-                </div>
+                <a href="/classes/new" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New Class
+                </a>
             <% } %>
         </div>
         
@@ -31,16 +25,16 @@
                                     <th style="width: 150px;">Instructor</th>
                                     <th style="width: 100px;">Room</th>
                                     <th style="width: 100px;">Enrollment</th>
-                                    <th style="width: 120px;">Actions</th>
+                                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                        <th style="width: 120px;">Actions</th>
+                                    <% } %>
                                 </tr>
                             </thead>
                             <tbody>
                                 <% classes.forEach(classItem => { %>
-                                    <tr>
+                                    <tr class="clickable-row" data-href="/classes/<%= classItem._id %>" style="cursor: pointer;">
                                         <td><%= classItem.id %></td>
-                                        <td>
-                                            <strong><%= classItem.name %></strong>
-                                        </td>
+                                        <td><strong><%= classItem.name %></strong></td>
                                         <td><%= classItem.subject %></td>
                                         <td><small><%= classItem.schedule %></small></td>
                                         <td><%= classItem.instructor ? classItem.instructor.name : 'Not assigned' %></td>
@@ -50,19 +44,14 @@
                                                 <%= classItem.students.length %>/<%= classItem.capacity %>
                                             </span>
                                         </td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" 
-                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Actions
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a class="dropdown-item" href="/classes/<%= classItem._id %>">
-                                                            <i class="fas fa-eye me-2"></i>View
-                                                        </a>
-                                                    </li>
-                                                    <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                        <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                                            <td onclick="event.stopPropagation();">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" 
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Actions
+                                                    </button>
+                                                    <ul class="dropdown-menu">
                                                         <li>
                                                             <a class="dropdown-item" href="/classes/<%= classItem._id %>/edit">
                                                                 <i class="fas fa-edit me-2"></i>Edit
@@ -77,10 +66,10 @@
                                                                 </button>
                                                             </form>
                                                         </li>
-                                                    <% } %>
-                                                </ul>
-                                            </div>
-                                        </td>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        <% } %>
                                     </tr>
                                 <% }) %>
                             </tbody>
@@ -100,5 +89,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Make table rows clickable
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+    });
+</script>
 
 <%- include('../../partials/footer') %>
