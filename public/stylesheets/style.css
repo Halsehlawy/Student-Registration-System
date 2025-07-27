@@ -1,3 +1,21 @@
+/* Logout button custom style */
+.navbar-github .nav-link.logout-link {
+    margin-right: 0.75rem;
+    transition: color 0.2s;
+}
+.navbar-github .nav-link.logout-link:hover {
+    color: #ff3b3b !important;
+}
+
+/* Username gradient */
+.navbar-github .navbar-text.username-gradient {
+    background: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    font-weight: 700;
+}
 /* CSS Variables */
 :root {
     --accent-color: #6B46C1;
@@ -58,6 +76,46 @@ a:hover { color: var(--accent-hover); }
     color: var(--accent-light) !important;
 }
 
+/* Logo Styling */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-badge {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+    transition: all 0.3s ease;
+}
+
+.logo-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(107, 70, 193, 0.4);
+}
+
+.logo-badge img {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+}
+
+.logo-text {
+    font-weight: 800;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, #3B82F6 0%, var(--accent-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+}
+
 /* Navigation Controls */
 .theme-toggle, .navbar-toggler {
     width: 36px;
@@ -72,6 +130,7 @@ a:hover { color: var(--accent-hover); }
 .theme-toggle {
     border-radius: 6px;
     padding: 0.25rem;
+    margin-right: 1.5rem;
 }
 
 .theme-toggle:hover {
@@ -422,6 +481,88 @@ a:hover { color: var(--accent-hover); }
 .footer {
     margin-top: auto;
     flex-shrink: 0;
+}
+
+/* Search Bar Styling - Make input groups seamless */
+.input-group {
+    width: 100% !important;
+    position: relative;
+}
+
+.input-group .input-group-text {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    padding: 0;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+/* All form controls in input groups */
+.input-group .form-control {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem !important;
+    flex: 1;
+    width: 100%;
+    padding-left: 1.1rem;
+    padding-right: 0.75rem;
+}
+
+/* Ensure form controls in input groups have proper border */
+.input-group .form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(107, 70, 193, 0.25);
+}
+
+.search-container .form-control {
+    border-color: #dee2e6;
+}
+
+.search-container .form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(107, 70, 193, 0.25);
+}
+
+/* Dark Mode for Search */
+[data-bs-theme="dark"] .input-group .input-group-text {
+    background-color: transparent;
+    border: none;
+    color: #d1d5db;
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    padding: 0;
+    pointer-events: none;
+}
+
+[data-bs-theme="dark"] .input-group .form-control {
+    background-color: var(--bs-body-bg);
+    border: 1px solid #4b5563;
+    border-radius: 0.375rem !important;
+    color: #d1d5db;
+    padding-left: 1.1rem;
+    padding-right: 0.75rem;
+}
+
+[data-bs-theme="dark"] .input-group .form-control:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+}
+
+[data-bs-theme="dark"] .search-container .form-control {
+    background-color: var(--bs-body-bg);
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+[data-bs-theme="dark"] .search-container .form-control::placeholder {
+    color: #9ca3af;
 }
 
 /* Dark Mode */

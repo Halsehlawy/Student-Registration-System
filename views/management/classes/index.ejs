@@ -11,9 +11,38 @@
             <% } %>
         </div>
         
-        <div class="card">
-            <div class="card-body">
-                <% if (classes && classes.length > 0) { %>
+        <% if (classes && classes.length > 0) { %>
+            <div class="card mb-3">
+                <div class="card-body py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="classSearch" 
+                                       placeholder="Search classes by name, subject, instructor, or schedule..."
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <span class="text-muted me-3" id="classCount">
+                                    <%= classes.length %> class<%= classes.length !== 1 ? 'es' : '' %> found
+                                </span>
+                                <button class="btn btn-outline-secondary btn-sm" id="clearSearch" style="display: none;">
+                                    <i class="fas fa-times me-1"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -32,7 +61,12 @@
                             </thead>
                             <tbody>
                                 <% classes.forEach(classItem => { %>
-                                    <tr class="clickable-row" data-href="/classes/<%= classItem._id %>" style="cursor: pointer;">
+                                    <tr class="clickable-row class-row" data-href="/classes/<%= classItem._id %>" style="cursor: pointer;"
+                                        data-name="<%= classItem.name.toLowerCase() %>"
+                                        data-subject="<%= classItem.subject.toLowerCase() %>"
+                                        data-schedule="<%= classItem.schedule.toLowerCase() %>"
+                                        data-instructor="<%= classItem.instructor ? classItem.instructor.name.toLowerCase() : 'not assigned' %>"
+                                        data-room="<%= classItem.room.toLowerCase() %>">
                                         <td><%= classItem.id %></td>
                                         <td><strong><%= classItem.name %></strong></td>
                                         <td><%= classItem.subject %></td>
@@ -75,18 +109,18 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="text-center py-4">
+                <i class="fas fa-chalkboard fa-3x text-muted mb-3"></i>
+                <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+                    <p class="text-muted">No classes found. <a href="/classes/new">Add your first class</a> to get started.</p>
                 <% } else { %>
-                    <div class="text-center py-4">
-                        <i class="fas fa-chalkboard fa-3x text-muted mb-3"></i>
-                        <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
-                            <p class="text-muted">No classes found. <a href="/classes/new">Add your first class</a> to get started.</p>
-                        <% } else { %>
-                            <p class="text-muted">No classes found.</p>
-                        <% } %>
-                    </div>
+                    <p class="text-muted">No classes found.</p>
                 <% } %>
             </div>
-        </div>
+        <% } %>
     </div>
 </div>
 
@@ -97,6 +131,61 @@
             window.location.href = this.dataset.href;
         });
     });
+
+    // Search functionality
+    const searchInput = document.getElementById('classSearch');
+    const clearButton = document.getElementById('clearSearch');
+    const classCount = document.getElementById('classCount');
+    const classRows = document.querySelectorAll('.class-row');
+    const totalClasses = classRows.length;
+
+    function updateClassCount(visibleCount) {
+        if (searchInput.value.trim() === '') {
+            classCount.textContent = `${totalClasses} class${totalClasses !== 1 ? 'es' : ''} found`;
+        } else {
+            classCount.textContent = `${visibleCount} of ${totalClasses} class${totalClasses !== 1 ? 'es' : ''} found`;
+        }
+    }
+
+    function filterClasses() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        classRows.forEach(row => {
+            const name = row.dataset.name;
+            const subject = row.dataset.subject;
+            const schedule = row.dataset.schedule;
+            const instructor = row.dataset.instructor;
+            const room = row.dataset.room;
+
+            const matches = name.includes(searchTerm) || 
+                           subject.includes(searchTerm) || 
+                           schedule.includes(searchTerm) || 
+                           instructor.includes(searchTerm) ||
+                           room.includes(searchTerm);
+
+            if (matches) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        updateClassCount(visibleCount);
+        clearButton.style.display = searchTerm ? 'block' : 'none';
+    }
+
+    searchInput.addEventListener('input', filterClasses);
+
+    clearButton.addEventListener('click', function() {
+        searchInput.value = '';
+        filterClasses();
+        searchInput.focus();
+    });
+
+    // Initialize
+    updateClassCount(totalClasses);
 </script>
 
 <%- include('../../partials/footer') %>

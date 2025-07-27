@@ -22,13 +22,17 @@
         <div class="container-fluid">
             <!-- Brand and Admin Info -->
             <div class="d-flex align-items-center">
-                <a class="navbar-brand d-flex align-items-center me-3" href="/">
-                    <img src="/assets/school.svg" alt="School Logo" width="32" height="32" class="me-2">
-                    SRS
+                <a class="navbar-brand me-3" href="/">
+                    <div class="logo-container">
+                        <div class="logo-badge">
+                            <img src="/assets/student.svg" alt="SRS Logo">
+                        </div>
+                        <span class="logo-text">SRS</span>
+                    </div>
                 </a>
                 <!-- Admin text beside SRS on mobile -->
                 <% if (locals.user) { %>
-                    <span class="navbar-text d-lg-none mobile-user">
+                    <span class="navbar-text d-lg-none mobile-user username-gradient">
                         <%= user.username %>
                     </span>
                 <% } %>
@@ -62,10 +66,10 @@
                 <!-- Desktop user menu -->
                 <div class="navbar-nav d-none d-lg-flex">
                     <% if (locals.user) { %>
-                        <span class="navbar-text me-3">
+                        <span class="navbar-text me-3 username-gradient">
                             <%= user.username %>
                         </span>
-                        <a class="nav-link" href="/auth/logout">Logout</a>
+                        <a class="nav-link logout-link" href="/auth/logout">Logout</a>
                     <% } else { %>
                         <a class="nav-link" href="/auth/login">Login</a>
                         <a class="nav-link" href="/auth/register">Register</a>

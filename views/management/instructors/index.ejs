@@ -10,6 +10,38 @@
                 </a>
             <% } %>
         </div>
+
+        <!-- Search Bar -->
+        <% if (instructors && instructors.length > 0) { %>
+            <div class="card mb-3">
+                <div class="card-body py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="instructorSearch" 
+                                       placeholder="Search instructors by name, ID, or contact..."
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <span class="text-muted me-3" id="instructorCount">
+                                    <%= instructors.length %> instructor<%= instructors.length !== 1 ? 's' : '' %> found
+                                </span>
+                                <button class="btn btn-outline-secondary btn-sm" id="clearSearch" style="display: none;">
+                                    <i class="fas fa-times me-1"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
         
         <div class="card">
             <div class="card-body">
@@ -27,9 +59,14 @@
                                     <% } %>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="instructorsTableBody">
                                 <% instructors.forEach(instructor => { %>
-                                    <tr class="clickable-row" data-href="/instructors/<%= instructor._id %>" style="cursor: pointer;">
+                                    <tr class="clickable-row instructor-row" 
+                                        data-href="/instructors/<%= instructor._id %>" 
+                                        data-name="<%= instructor.name.toLowerCase() %>" 
+                                        data-id="<%= instructor.id %>" 
+                                        data-contact="<%= instructor.contact.replace(/\D/g, '') %>"
+                                        style="cursor: pointer;">
                                         <td><%= instructor.id %></td>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -72,6 +109,13 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- No Results Message (Hidden by default) -->
+                    <div class="text-center py-4 d-none" id="noResults">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No instructors found</h5>
+                        <p class="text-muted">Try adjusting your search terms</p>
+                    </div>
                 <% } else { %>
                     <div class="text-center py-4">
                         <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
@@ -94,6 +138,79 @@
             window.location.href = this.dataset.href;
         });
     });
+
+    // Search functionality
+    const searchInput = document.getElementById('instructorSearch');
+    const clearBtn = document.getElementById('clearSearch');
+    const instructorRows = document.querySelectorAll('.instructor-row');
+    const noResults = document.getElementById('noResults');
+    const tableContainer = document.querySelector('.table-responsive');
+    const instructorCount = document.getElementById('instructorCount');
+    const totalInstructors = <%= instructors ? instructors.length : 0 %>;
+
+    function updateCount(visibleCount) {
+        if (visibleCount === totalInstructors) {
+            instructorCount.textContent = `${totalInstructors} instructor${totalInstructors !== 1 ? 's' : ''} found`;
+        } else {
+            instructorCount.textContent = `${visibleCount} of ${totalInstructors} instructor${totalInstructors !== 1 ? 's' : ''}`;
+        }
+    }
+
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        if (searchTerm === '') {
+            // Show all rows
+            instructorRows.forEach(row => {
+                row.style.display = 'table-row';
+                visibleCount++;
+            });
+            clearBtn.style.display = 'none';
+            if (tableContainer) tableContainer.style.display = 'block';
+            if (noResults) noResults.classList.add('d-none');
+        } else {
+            // Filter rows
+            instructorRows.forEach(row => {
+                const name = row.dataset.name;
+                const id = row.dataset.id;
+                const contact = row.dataset.contact;
+                
+                if (name.includes(searchTerm) || 
+                    id.includes(searchTerm) || 
+                    contact.includes(searchTerm)) {
+                    row.style.display = 'table-row';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            clearBtn.style.display = 'inline-block';
+            
+            // Show/hide no results message
+            if (visibleCount === 0) {
+                if (tableContainer) tableContainer.style.display = 'none';
+                if (noResults) noResults.classList.remove('d-none');
+            } else {
+                if (tableContainer) tableContainer.style.display = 'block';
+                if (noResults) noResults.classList.add('d-none');
+            }
+        }
+
+        updateCount(visibleCount);
+    }
+
+    // Search input event
+    if (searchInput) {
+        searchInput.addEventListener('input', performSearch);
+        
+        // Clear search
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            performSearch();
+            searchInput.focus();
+        });
+    }
 </script>
 
 <%- include('../../partials/footer') %>
